@@ -20,7 +20,7 @@ public class DBConnection {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("Connected to the database successfully.");
 
-            
+
             //Test query
             String query = "SELECT c_first_name FROM customer";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -53,4 +53,3 @@ public class DBConnection {
     }
 
 }
-
