@@ -1,7 +1,5 @@
 package model;
 
-import org.w3c.dom.ls.LSOutput;
-
 import java.sql.*;
 
 public class DBConnection {
@@ -9,24 +7,20 @@ public class DBConnection {
     private static final String USER = "aj6817";
     private static final String PASSWORD = System.getenv("CRED");
 
-
-    public static void main(String[] args) {
+    public Connection testConnection() {
         Connection connection = null;
 
         try {
-
             Class.forName("org.postgresql.Driver");
 
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("Connected to the database successfully.");
 
-            
-            //Test query
+            // Test query
             String query = "SELECT c_first_name FROM customer";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
 
-                //Test query result
                 while (resultSet.next()) {
                     String name = resultSet.getString("c_first_name");
                     System.out.println("Name: " + name);
@@ -39,18 +33,33 @@ public class DBConnection {
         } catch (SQLException e) {
             System.out.println("Connection to the database failed!");
             e.printStackTrace();
-        } finally {
-            // Close the connection
-            if (connection != null) {
-                try {
-                    connection.close();
-                    System.out.println("Connection closed.");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+
+        return connection;
     }
 
-}
+    public void insertCustomer(Connection connection, String tableName, int id, String firstName, String lastName,
+                               String email, String address, String city, String country, String phoneNumber, String password) {
+        String query = "INSERT INTO " + tableName + " (c_id, c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, firstName);
+            preparedStatement.setString(3, lastName);
+            preparedStatement.setString(4, email);
+            preparedStatement.setString(5, address);
+            preparedStatement.setString(6, city);
+            preparedStatement.setString(7, country);
+            preparedStatement.setString(8, phoneNumber);
+            preparedStatement.setString(9, password);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println("Inserted " + rowsAffected + " row(s) into " + tableName + " successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
