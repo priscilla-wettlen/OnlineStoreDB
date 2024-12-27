@@ -4,12 +4,15 @@ import controller.Controller;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class MainPanel extends JPanel {
     private Controller controller;
     private int width;
     private int height;
+    private JTable productTable;
+    private DefaultTableModel tableModel;
 
     private JTextField txtFirstName;
     private JTextField txtLastName;
@@ -21,20 +24,29 @@ public class MainPanel extends JPanel {
         this.controller = controller;
         this.width = width;
         this.height = height;
+        setLayout(new BorderLayout());
+        //setupTable();
         setupPanel();
     }
 
+//    private void setupTable(){
+//        String[] columns = {"p_code", "p_name", "p_amount", "p_price", "p_supplier"};
+//
+//        tableModel = new DefaultTableModel(columns, 0);
+//        productTable = new JTable(tableModel);
+//        JScrollPane scrollPane = new JScrollPane(productTable);
+//        add(scrollPane, BorderLayout.CENTER);
+//    }
+
     private void setupPanel() {
-        // Set a simple layout for demonstration purposes
         setLayout(new GridLayout(2, 2, 10, 10));
 
-        // Create components
         JLabel lblFirstName = new JLabel("First Name:");
         txtFirstName = new JTextField(15);
         JLabel lblLastName = new JLabel("Last Name:");
         txtLastName = new JTextField(15);
 
-        // Add components to the panel
+
         add(lblFirstName);
         add(txtFirstName);
         add(lblLastName);

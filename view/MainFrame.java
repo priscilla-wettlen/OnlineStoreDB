@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
     }
 
     public void setUpFrame() {
-        final int offsetX = width/5;
+        final int offsetX = width/ 5;
         final int offsetY = height / 5;
 
         setSize(width, height);
@@ -31,8 +31,13 @@ public class MainFrame extends JFrame {
         setContentPane(mainPanel);
         setResizable(false);
         pack();
-
         setVisible(true);
+
+//        customerTable = new CustomerTable(controller, width, height);
+//        setContentPane(customerTable);
+//        setResizable(false);
+//        pack();
+//        setVisible(true);
     }
 
 
