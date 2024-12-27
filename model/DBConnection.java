@@ -1,13 +1,16 @@
 package model;
 
 import java.sql.*;
+import java.util.ArrayList;
+
+import model.Product;
 
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
     private static final String USER = "aj6817";
     private static final String PASSWORD = System.getenv("CRED");
 
-    public Connection testConnection() {
+    public Connection createConnection() {
         Connection connection = null;
 
         try {
@@ -61,5 +64,35 @@ public class DBConnection {
             System.out.println("Error during insert operation: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<Product> readProduct(Connection connection) {
+        String query = "SELECT * FROM product";
+        ArrayList<Product> products = new ArrayList<Product>();
+
+        try{
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            while(rs.next()){
+                products.add(
+                        new Product(rs.getInt("p_code"),
+                                rs.getString("p_name"),
+                                rs.getInt("p_amount"),
+                                rs.getInt("p_price"),
+                                rs.getInt("p_supplier"))
+                );
+            }
+
+            rs.close();
+            statement.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+            e.getMessage();
+            return products;
+        }
+
+        return products;
+
     }
 }
