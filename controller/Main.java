@@ -11,7 +11,7 @@ public class Main{
         System.out.println("Starting the application...");
         DBConnection db = new DBConnection();
         Connection conn = db.createConnection();
-        //db.insertCustomer(conn, "customer", 2, "Priscilla", "Wettlen", "priscilla@email.com", "Huvudgatan", "Malmö","Sverige","666","abc123" );
+
         db.readProduct(conn);
 
         Controller controller = new Controller();

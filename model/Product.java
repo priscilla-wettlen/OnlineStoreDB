@@ -1,50 +1,50 @@
 package model;
 
 public class Product {
-    private int code;
-    private String name;
-    private int amount;
-    private int price;
+    private int p_code;
+    private String p_name;
+    private int p_amount;
+    private int p_price;
     private int supplier;
 
     public Product(int code, String name, int amount, int price, int supplier) {
-        this.code = code;
-        this.name = name;
-        this.amount = amount;
-        this.price = price;
+        this.p_code = code;
+        this.p_name = name;
+        this.p_amount = amount;
+        this.p_price = price;
         this.supplier = supplier;
     }
 
     public int getCode() {
-        return code;
+        return p_code;
     }
 
     public void setCode(int code) {
-        this.code = code;
+        this.p_code = code;
     }
 
-    public String getName() {
-        return name;
+    public String getP_name() {
+        return p_name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setP_name(String p_name) {
+        this.p_name = p_name;
     }
 
-    public int getAmount() {
-        return amount;
+    public int getP_amount() {
+        return p_amount;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setP_amount(int p_amount) {
+        this.p_amount = p_amount;
     }
 
-    public int getPrice() {
-        return price;
+    public int getP_price() {
+        return p_price;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setP_price(int p_price) {
+        this.p_price = p_price;
     }
 
     public int getSupplier() {
@@ -56,6 +56,6 @@ public class Product {
     }
 
     public String[] toStringArray() {
-        return new String[] {Integer.toString(code), name, Integer.toString(amount), Integer.toString(price), Integer.toString(supplier)};
+        return new String[] {Integer.toString(p_code), p_name, Integer.toString(p_amount), Integer.toString(p_price), Integer.toString(supplier)};
     }
 }

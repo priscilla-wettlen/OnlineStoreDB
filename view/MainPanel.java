@@ -1,5 +1,6 @@
 package view;
 import controller.Controller;
+import model.Customer;
 import model.Product;
 
 import javax.swing.*;
@@ -15,11 +16,25 @@ public class MainPanel extends JPanel {
     private int height;
     private JTable productTable;
 
+    //Customer registration
+    private JLabel lblFirstName;
+    private JLabel lblLastName;
+    private JLabel lblEmail;
+    private JLabel lblAddress;
+    private JLabel lblCity;
+    private JLabel lblCountry;
+    private JLabel lblPhoneNbr;
+    private JLabel lblPassword;
 
-//    private JTextField txtFirstName;
-//    private JTextField txtLastName;
-//    private JLabel lblFirstName;
-//    private JLabel lblLastName;
+    private JTextField firstName;
+    private JTextField lastName;
+    private JTextField email;
+    private JTextField address;
+    private JTextField city;
+    private JTextField country;
+    private JTextField phoneNbr;
+    private JTextField password;
+
 
     public MainPanel(Controller controller, int width, int height)
     {
@@ -30,6 +45,10 @@ public class MainPanel extends JPanel {
 
         //setupPanel();
     }
+
+//    public JPanel setupNewCustomerPanel(Customer customer){
+//
+//    }
 
     public JTable setupProductTable(ArrayList<Product> products){
         String[] columns = {"p_code", "p_name", "p_amount", "p_price", "p_supplier"};

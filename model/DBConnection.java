@@ -41,8 +41,9 @@ public class DBConnection {
         return connection;
     }
 
-    public void insertCustomer(Connection connection, String tableName, int id, String firstName, String lastName,
+    public void insertNewCustomer(Connection connection, String tableName, int id, String firstName, String lastName,
                                String email, String address, String city, String country, String phoneNumber, String password) {
+
         String query = "INSERT INTO " + tableName + " (c_id, c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -57,6 +58,7 @@ public class DBConnection {
             preparedStatement.setString(8, phoneNumber);
             preparedStatement.setString(9, password);
 
+
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println("Inserted " + rowsAffected + " row(s) into " + tableName + " successfully.");
 
@@ -64,6 +66,7 @@ public class DBConnection {
             System.out.println("Error during insert operation: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
     public ArrayList<Product> readProduct(Connection connection) {

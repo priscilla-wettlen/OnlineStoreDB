@@ -1,10 +1,8 @@
 package controller;
 
 import model.*;
-import org.postgresql.core.BaseConnection;
 import view.*;
-import javax.swing.*;
-import java.awt.*;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 
@@ -31,7 +29,7 @@ public class Controller {
         // Redundant?
         ArrayList<Product> products = dbConnection.readProduct(this.conn);
         for(Product product : products){
-            System.out.println(product.getName());
+            System.out.println(product.getP_name());
         }
 
         panel.setupProductTable(products);
