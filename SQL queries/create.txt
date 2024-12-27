@@ -1,0 +1,86 @@
+DROP TABLE IF EXISTS shipment_item;
+DROP TABLE IF EXISTS shipment;
+DROP TABLE IF EXISTS discount;
+DROP TABLE IF EXISTS discount_category;
+DROP TABLE IF EXISTS store_admin;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS supplier;
+
+CREATE TABLE supplier
+(
+    s_code integer NOT NULL,
+    s_phonenumber char(20),
+    s_address varchar(40),
+    PRIMARY KEY (s_code)
+);
+
+CREATE TABLE product
+(
+    p_code integer NOT NULL,
+    p_name varchar(25) NOT NULL,
+    p_amount integer NOT NULL,
+    p_price integer NOT NULL,
+    p_supplier integer NOT NULL,
+    PRIMARY KEY (p_code),
+	FOREIGN KEY (p_supplier) REFERENCES supplier (s_code)
+);
+
+CREATE TABLE customer
+(
+    c_id integer NOT NULL,
+    c_first_name varchar(20) NOT NULL,
+    c_last_name varchar(20) NOT NULL,
+    c_email varchar(30) NOT NULL,
+    c_address varchar(20) NOT NULL,
+    c_city varchar(20) NOT NULL,
+    c_country varchar(20) NOT NULL,
+    c_phonenumber varchar(20) NOT NULL,
+    c_password varchar(30) NOT NULL,
+    PRIMARY KEY (c_id)
+);
+
+CREATE TABLE store_admin
+(
+    a_id char(10) NOT NULL,
+    a_password char(20) NOT NULL,
+    PRIMARY KEY (a_id)
+);
+
+CREATE TABLE discount_category
+(
+    dc_code integer NOT NULL,
+    dc_name varchar(15) NOT NULL,
+    PRIMARY KEY (dc_code)
+);
+
+CREATE TABLE discount
+(
+    d_product_code integer NOT NULL,
+    d_discount_code integer,
+    d_amount integer,
+    d_date_start date NOT NULL,
+    d_date_end date NOT NULL,
+    PRIMARY KEY (d_product_code, d_date_start, d_date_end),
+	FOREIGN KEY (d_discount_code) REFERENCES discount_category (dc_code),
+	FOREIGN KEY (d_product_code) REFERENCES product (p_code)
+);
+
+CREATE TABLE shipment
+(
+    s_customer integer NOT NULL,
+    s_id integer NOT NULL,
+    s_confirmed boolean NOT NULL,
+    PRIMARY KEY (s_id),
+	FOREIGN KEY (s_customer) REFERENCES customer (c_id)
+);
+
+CREATE TABLE shipment_item
+(
+    si_product integer NOT NULL,
+    si_amount integer NOT NULL,
+    si_shipmentid integer NOT NULL,
+    PRIMARY KEY (si_product, si_shipmentid),
+	FOREIGN KEY (si_product) REFERENCES product (p_code),
+	FOREIGN KEY (si_shipmentid) REFERENCES shipment (s_id)
+);
