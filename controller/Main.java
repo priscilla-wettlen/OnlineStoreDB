@@ -1,6 +1,7 @@
 package controller;
 
 import model.DBConnection;
+import view.MainFrame;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,7 +11,8 @@ public class Main{
         System.out.println("Starting the application...");
         DBConnection db = new DBConnection();
         Connection conn = db.testConnection();
-        db.insertCustomer(conn, "customer", 2, "Priscilla", "Wettlen", "priscilla@email.com", "Huvudgatan", "Malmö","Sverige","666","abc123" );
+        //db.insertCustomer(conn, "customer", 2, "Priscilla", "Wettlen", "priscilla@email.com", "Huvudgatan", "Malmö","Sverige","666","abc123" );
+        Controller controller = new Controller();
         System.out.println("Application finished.");
     }
 
