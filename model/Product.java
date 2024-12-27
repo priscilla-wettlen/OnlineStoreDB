@@ -54,4 +54,8 @@ public class Product {
     public void setSupplier(int supplier) {
         this.supplier = supplier;
     }
+
+    public String[] toStringArray() {
+        return new String[] {Integer.toString(code), name, Integer.toString(amount), Integer.toString(price), Integer.toString(supplier)};
+    }
 }

@@ -17,19 +17,24 @@ public class Controller {
     String firstName;
 
     public Controller(){
-        frame = new MainFrame(1000, 500, this);
         panel = new MainPanel(this, 1000, 500);
+        frame = new MainFrame(1000, 500, this, panel);
+
         dbConnection = new DBConnection();
         conn = dbConnection.createConnection();
 
+        frame.setUpFrame(dbConnection.readProduct(this.conn));
         displayProductTable();
     }
 
     public void displayProductTable(){
+        // Redundant?
         ArrayList<Product> products = dbConnection.readProduct(this.conn);
         for(Product product : products){
             System.out.println(product.getName());
         }
+
+        panel.setupProductTable(products);
 
     }
 
