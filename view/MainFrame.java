@@ -17,7 +17,6 @@ public class MainFrame extends JFrame {
 
     public MainFrame(int width, int height, Controller controller, MainPanel mainPanel) {
         this.controller = controller;
-        // this.mainPanel = new MainPanel(controller, width, height);
         this.mainPanel = mainPanel;
     }
 
@@ -34,7 +33,7 @@ public class MainFrame extends JFrame {
         setContentPane(mainPanel);
         setResizable(false);
         pack();
-        //setVisible(true);
+        setVisible(true);
 
         JTable productTable = mainPanel.setupProductTable(products);
         JScrollPane scrollPane = new JScrollPane(productTable);
@@ -43,12 +42,6 @@ public class MainFrame extends JFrame {
         frame.setVisible(true);
 
 
-
-//        customerTable = new CustomerTable(controller, width, height);
-//        setContentPane(customerTable);
-//        setResizable(false);
-//        pack();
-//        setVisible(true);
     }
 
 

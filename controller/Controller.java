@@ -38,8 +38,4 @@ public class Controller {
 
     }
 
-//    public void setFirstName(String firstName){
-//        frame.setFirstNameText(this.firstName);
-//    }
-
 }
