@@ -1,0 +1,8 @@
+INSERT INTO supplier
+VALUES (1,074-5847392,'this is a address');
+INSERT INTO product
+VALUES 
+(1,'en dator',20,3000,1),
+(2,'en dator mus',10,300,1);
+INSERT INTO customer
+VALUES (1,'namn','namnson','this is an email@email.server','en annan gata','en stad','Sverige','757-7583867','ett säkert lösenord');
