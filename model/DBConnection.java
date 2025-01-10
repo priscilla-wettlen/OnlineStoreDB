@@ -1,6 +1,8 @@
 package model;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
@@ -64,40 +66,32 @@ public class DBConnection {
         return false;
     }
 
-    public SQLResult selectData(Connection connection, String table, String condition)
-    {
+    public SQLResult selectData(Connection connection, String table, String condition) {
         String query = "SELECT * FROM " + table;
 
-        if(condition != null)
-        {
-            query = query + " WHERE " + condition;
+        if (condition != null) {
+            query += " WHERE " + condition;
         }
-        
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) 
-        {
-            try (ResultSet rs = preparedStatement.executeQuery()) 
-            {
-                String[] data = new String[100];
-                int counter = 0;
-                while (rs.next()) {
-                    for(int i = 1; i < rs.getMetaData().getColumnCount()+1; i++)
-                    {
-                        data[counter] = rs.getString(i);
-                        counter++;
-                    }
-                }
-                
-                System.out.println(counter);
 
-                String[] tempData = new String[counter];
-                for(int i = 0; i < counter; i++)
-                {
-                    tempData[i] = data[i];
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                ResultSetMetaData metaData = rs.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                List<String[]> data = new ArrayList<>();
+                while (rs.next()) {
+                    String[] row = new String[columnCount];
+                    for (int i = 0; i < columnCount; i++) {
+                        row[i] = rs.getString(i + 1);
+                    }
+                    data.add(row);
                 }
-                return new SQLResult(tempData, rs.getMetaData().getColumnCount());
+
+                String[][] tableData = new String[data.size()][columnCount];
+                data.toArray(tableData);
+                return new SQLResult(tableData);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
             e.printStackTrace();
         }
@@ -105,10 +99,10 @@ public class DBConnection {
         return null;
     }
 
-    public SQLResult selectData(Connection connection, String table)
-    {
+    public SQLResult selectData(Connection connection, String table) {
         return selectData(connection, table, null);
     }
+
 
     public void insertCustomer(Connection connection, String tableName, int id, String firstName, String lastName,
                                String email, String address, String city, String country, String phoneNumber, String password) {

@@ -16,8 +16,8 @@ public class Main{
         SQLResult result = db.selectData(conn, "customer");
 
         String[] test = new String[5];
-        test[0] = "4";
-        test[1] = "'ett tanbentbord'";
+        test[0] = "57895";
+        test[1] = "'en dator'";
         test[2] = "100";
         test[3] = "400";
         test[4] = "1";
