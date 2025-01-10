@@ -5,7 +5,7 @@ import java.sql.*;
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
     private static final String USER = "aj6817";
-    private static final String PASSWORD = System.getenv("CRED");
+    private static final String PASSWORD = "ywv0moz1";
 
     public Connection testConnection() {
         Connection connection = null;
@@ -36,6 +36,78 @@ public class DBConnection {
         }
 
         return connection;
+    }
+
+    public boolean insertData(Connection connection, String table, String[] data)
+    {
+        String query = "INSERT INTO " + table + " VALUES (" + data[0];
+        for(int i = 1; i < data.length; i++)
+        {
+            query = query + ", " + data[i];
+        }
+        query = query + ")";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            
+
+            System.out.println(query);
+            int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println("Inserted " + rowsAffected + " row(s) into " + table + " successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+
+        return false;
+    }
+
+    public SQLResult selectData(Connection connection, String table, String condition)
+    {
+        String query = "SELECT * FROM " + table;
+
+        if(condition != null)
+        {
+            query = query + " WHERE " + condition;
+        }
+        
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) 
+        {
+            try (ResultSet rs = preparedStatement.executeQuery()) 
+            {
+                String[] data = new String[100];
+                int counter = 0;
+                while (rs.next()) {
+                    for(int i = 1; i < rs.getMetaData().getColumnCount()+1; i++)
+                    {
+                        data[counter] = rs.getString(i);
+                        counter++;
+                    }
+                }
+                
+                System.out.println(counter);
+
+                String[] tempData = new String[counter];
+                for(int i = 0; i < counter; i++)
+                {
+                    tempData[i] = data[i];
+                }
+                return new SQLResult(tempData, rs.getMetaData().getColumnCount());
+            }
+        }
+        catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public SQLResult selectData(Connection connection, String table)
+    {
+        return selectData(connection, table, null);
     }
 
     public void insertCustomer(Connection connection, String tableName, int id, String firstName, String lastName,
