@@ -15,7 +15,7 @@ public class DBConnection {
             Class.forName("org.postgresql.Driver");
 
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Connected to the database successfully.");
+            //System.out.println("Connected to the database successfully.");
 
             // Test query
             String query = "SELECT c_first_name FROM customer";
@@ -24,7 +24,7 @@ public class DBConnection {
 
                 while (resultSet.next()) {
                     String name = resultSet.getString("c_first_name");
-                    System.out.println("Name: " + name);
+                    //System.out.println("Name: " + name);
                 }
             }
 

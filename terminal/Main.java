@@ -1,13 +1,33 @@
 package terminal;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Scanner;
-import terminal.DBConnection;
 
 public class Main {
     static Scanner input = new Scanner(System.in);
     static DBConnection db = new DBConnection();
+
+    public static boolean validateAdmin(String email, String password) {
+        String query = "SELECT * FROM store_admin WHERE admin_email = ? AND a_password = ?";
+        boolean isValid = false;
+
+        Connection connection = db.createConnection();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, password);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    isValid = true;
+                }
+            }
+
+        }catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return isValid;
+    }
 
 
     public static void insertCustomer(int id, String firstName, String lastName,
@@ -36,36 +56,6 @@ public class Main {
             e.printStackTrace();
         }
     }
-
-//    public ArrayList<Product> readProduct(Connection connection) {
-//        String query = "SELECT * FROM product";
-//        ArrayList<Product> products = new ArrayList<Product>();
-//
-//        try{
-//            Statement statement = connection.createStatement();
-//            ResultSet rs = statement.executeQuery(query);
-//
-//            while(rs.next()){
-//                products.add(
-//                        new Product(rs.getInt("p_code"),
-//                                rs.getString("p_name"),
-//                                rs.getInt("p_amount"),
-//                                rs.getInt("p_price"),
-//                                rs.getInt("p_supplier"))
-//                );
-//            }
-//
-//            rs.close();
-//            statement.close();
-//        }catch (SQLException e){
-//            e.printStackTrace();
-//            e.getMessage();
-//            return products;
-//        }
-//
-//        return products;
-//
-//    }
 
     public static int readMenuChoice() {
         int option = -1;
@@ -171,12 +161,25 @@ public class Main {
                     isOn = true;
                     break;
                 case 4:
-                    System.out.println("Enter your admin email address: ");
-                    String adminEmail = input.next();
-                    System.out.println("Enter your password: ");
-                    String adminPassword = input.next();
-                    adminActionsLoop();
-                    isOn = false;
+                    boolean validCredentials = false;
+
+                    while (!validCredentials) {
+                        System.out.println("Enter your admin email address: ");
+                        String adminEmail = input.next();
+
+                        System.out.println("Enter your password: ");
+                        String adminPassword = input.next();
+
+                        if (validateAdmin(adminEmail, adminPassword)) {
+                            System.out.println("Login successful. Accessing admin actions...");
+                            validCredentials = true;
+                            adminActionsLoop();
+                            isOn = false;
+                        } else {
+                            System.out.println("Invalid credentials. Please try again.");
+                        }
+                    }
+                    isOn = true;
                     break;
                 case 5:
                     System.out.println("Hejdå!");
