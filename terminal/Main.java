@@ -98,15 +98,43 @@ public class Main {
         System.out.println("Welcome to the Electronics Store! " +
                 "What would you like to do?\n: ");
         System.out.println("1. I'm a returning customer and want to login.");
-        System.out.println("2. I don't have an account and would like to register.");
+        System.out.println("2. I don't have an account and I want to register.");
         System.out.println("3. I just want to browse your catalogue.");
-        System.out.println("4. I changed my mind. Hejdå!");
+        System.out.println("4. I want to login as an admin");
+        System.out.println("5. I changed my mind. Hejdå!");
     }
 
-    public static void main(String[] args) throws SQLException {
-        System.out.println("Starting the application...");
-        DBConnection db = new DBConnection();
-        Connection conn = db.createConnection();
+    public static void printAdminMenu(){
+        System.out.println("Welcome Admin! "  +
+                "What would you like to do?\n: ");
+        System.out.println("1. Something");
+        System.out.println("2. Something else");
+        System.out.println("3. Exit");
+    }
+
+    public static void adminActionsLoop(){
+        boolean isOn = false;
+        do{
+            printAdminMenu();
+            int option = readMenuChoice();
+            switch (option) {
+                case 1:
+                    System.out.println("This is something");
+                    isOn = true;
+                    break;
+                case 2:
+                    System.out.println("This is something else");
+                    isOn = true;
+                    break;
+                case 3:
+                    System.out.println("You have existed admin menu. You will now be redirected to main menu.");
+                    mainMenuLoop();
+                    break;
+            }
+        }while(isOn);
+    }
+
+    public static void mainMenuLoop(){
         boolean isOn = false;
         do{
             PrintLoginMenu();
@@ -143,6 +171,14 @@ public class Main {
                     isOn = true;
                     break;
                 case 4:
+                    System.out.println("Enter your admin email address: ");
+                    String adminEmail = input.next();
+                    System.out.println("Enter your password: ");
+                    String adminPassword = input.next();
+                    adminActionsLoop();
+                    isOn = false;
+                    break;
+                case 5:
                     System.out.println("Hejdå!");
                     isOn = false;
                     break;
@@ -150,6 +186,13 @@ public class Main {
                     System.out.println("Invalid option!");
             }
         }while(isOn);
+    }
+
+    public static void main(String[] args) throws SQLException {
+        System.out.println("Starting the application...");
+        DBConnection db = new DBConnection();
+        Connection conn = db.createConnection();
+        mainMenuLoop();
         System.out.println("Application finished.");
     }
 
