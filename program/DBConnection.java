@@ -157,5 +157,29 @@ public class DBConnection {
         }
     }
 
+    public void viewStoreCatalogueAsGuest(){
+        String query = "SELECT * FROM product";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+            System.out.printf("%-10s %-20s %-30s%n", "Product", "Available units", "Price");
+            System.out.println("------------------------------------------------------------");
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("p_name");
+                int amount = resultSet.getInt("p_amount");
+                double price = resultSet.getDouble("p_price");
+
+                System.out.printf("%-10s %-20s %-30s%n", name, amount, price);
+                System.out.println();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
 }
