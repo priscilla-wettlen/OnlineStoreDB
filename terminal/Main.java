@@ -6,55 +6,18 @@ import java.util.Scanner;
 public class Main {
     static Scanner input = new Scanner(System.in);
     static DBConnection db = new DBConnection();
-
-    public static boolean validateAdmin(String email, String password) {
-        String query = "SELECT * FROM store_admin WHERE admin_email = ? AND a_password = ?";
-        boolean isValid = false;
-
-        Connection connection = db.createConnection();
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, password);
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (rs.next()) {
-                    isValid = true;
-                }
-            }
-
-        }catch (SQLException e) {
-            System.out.println("Error during select operation: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return isValid;
-    }
+    static Connection conn = db.createConnection();
 
 
-    public static void insertCustomer(int id, String firstName, String lastName,
-                               String email, String address, String city, String country, String phoneNumber, String password) {
-        String query = "INSERT INTO customer" + " (c_id, c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        Connection connection = db.createConnection();
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, firstName);
-            preparedStatement.setString(3, lastName);
-            preparedStatement.setString(4, email);
-            preparedStatement.setString(5, address);
-            preparedStatement.setString(6, city);
-            preparedStatement.setString(7, country);
-            preparedStatement.setString(8, phoneNumber);
-            preparedStatement.setString(9, password);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
-
-        } catch (SQLException e) {
-            System.out.println("Error during insert operation: " + e.getMessage());
-            e.printStackTrace();
-        }
+    //-----MAIN MENU-----//
+    public static void PrintLoginMenu(){
+        System.out.println("Welcome to the Electronics Store! " +
+                "What would you like to do?:\n ");
+        System.out.println("1. I'm a returning customer and want to login.");
+        System.out.println("2. I don't have an account and I want to register.");
+        System.out.println("3. I just want to browse your catalogue.");
+        System.out.println("4. I want to login as an admin");
+        System.out.println("5. I changed my mind. Hejdå!");
     }
 
     public static int readMenuChoice() {
@@ -82,46 +45,6 @@ public class Main {
 
         return option;
 
-    }
-
-    public static void PrintLoginMenu(){
-        System.out.println("Welcome to the Electronics Store! " +
-                "What would you like to do?\n: ");
-        System.out.println("1. I'm a returning customer and want to login.");
-        System.out.println("2. I don't have an account and I want to register.");
-        System.out.println("3. I just want to browse your catalogue.");
-        System.out.println("4. I want to login as an admin");
-        System.out.println("5. I changed my mind. Hejdå!");
-    }
-
-    public static void printAdminMenu(){
-        System.out.println("Welcome Admin! "  +
-                "What would you like to do?\n: ");
-        System.out.println("1. Something");
-        System.out.println("2. Something else");
-        System.out.println("3. Exit");
-    }
-
-    public static void adminActionsLoop(){
-        boolean isOn = false;
-        do{
-            printAdminMenu();
-            int option = readMenuChoice();
-            switch (option) {
-                case 1:
-                    System.out.println("This is something");
-                    isOn = true;
-                    break;
-                case 2:
-                    System.out.println("This is something else");
-                    isOn = true;
-                    break;
-                case 3:
-                    System.out.println("You have existed admin menu. You will now be redirected to main menu.");
-                    mainMenuLoop();
-                    break;
-            }
-        }while(isOn);
     }
 
     public static void mainMenuLoop(){
@@ -189,6 +112,99 @@ public class Main {
                     System.out.println("Invalid option!");
             }
         }while(isOn);
+    }
+
+    //-----ADMIN ACTIONS-----//
+    public static boolean validateAdmin(String email, String password) {
+        String query = "SELECT * FROM store_admin WHERE admin_email = ? AND a_password = ?";
+        boolean isValid = false;
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, password);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    isValid = true;
+                }
+            }
+
+        }catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return isValid;
+    }
+
+    public static void printAdminMenu(){
+        System.out.println("Welcome Admin! "  +
+                "What would you like to do?:\n ");
+        System.out.println("1. Add a new supplier");
+        System.out.println("2. View list of suppliers");
+        System.out.println("3. Add a new product");
+        System.out.println("4. Delete a product");
+        System.out.println("5. Add a new discount");
+        System.out.println("6. Exit");
+    }
+
+    public static void adminActionsLoop(){
+        boolean isOn = false;
+        do{
+            printAdminMenu();
+            int option = readMenuChoice();
+            switch (option) {
+                case 1:
+                    System.out.println("This is something");
+                    isOn = true;
+                    break;
+                case 2:
+                    System.out.println("This is something else");
+                    isOn = true;
+                    break;
+                case 3:
+                    System.out.println("You have existed admin menu. You will now be redirected to main menu.");
+                    mainMenuLoop();
+                    break;
+            }
+        }while(isOn);
+    }
+
+    public static void addNewSupplier(){
+        String query = "INSERT INTO supplier VALUES (?, ?, ?, ?, ?)";
+
+        Connection conn = db.createConnection();
+
+        try(PreparedStatement ps = conn.prepareStatement(query)){
+
+        }catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    //-----CUSTOMER ACTIONS-----//
+    public static void insertCustomer(int id, String firstName, String lastName,
+                                      String email, String address, String city, String country, String phoneNumber, String password) {
+        String query = "INSERT INTO customer" + " (c_id, c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, firstName);
+            preparedStatement.setString(3, lastName);
+            preparedStatement.setString(4, email);
+            preparedStatement.setString(5, address);
+            preparedStatement.setString(6, city);
+            preparedStatement.setString(7, country);
+            preparedStatement.setString(8, phoneNumber);
+            preparedStatement.setString(9, password);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) throws SQLException {
