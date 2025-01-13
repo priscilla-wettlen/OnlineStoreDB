@@ -39,7 +39,7 @@ public class DBConnection {
     //-----ADMIN ACTIONS-----//
 
     public boolean validateAdmin(String email, String password) {
-        String query = "SELECT * FROM store_admin WHERE admin_email = ? AND a_password = ?";
+        String query = "SELECT * FROM store_admin WHERE a_email = ? AND a_password = ?";
         boolean isValid = false;
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -58,10 +58,70 @@ public class DBConnection {
         return isValid;
     }
 
-    public void addNewSupplier(){
-        String query = "INSERT INTO supplier VALUES (?, ?, ?, ?, ?)";
+    public void addNewSupplier(String name, String address, String city, String phonenumber){
+        String query = "INSERT INTO supplier" + " (s_name, s_address, s_city, s_phonenumber) " + "VALUES (?, ?, ?, ?)";
 
         try(PreparedStatement ps = conn.prepareStatement(query)){
+            ps.setString(1, name);
+            ps.setString(2, address);
+            ps.setString(3, city);
+            ps.setString(4, phonenumber);
+
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Inserted " + rowsAffected + " row(s) into supplier successfully.");
+
+        }catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void viewListOfSuppliers() {
+        String query = "SELECT * FROM supplier";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+            System.out.printf("%-10s %-20s %-30s %-20s %-15s%n", "Code", "Name", "Address", "City", "Phone Number");
+            System.out.println("--------------------------------------------------------------------------------------");
+
+            while (resultSet.next()) {
+                int code = resultSet.getInt("s_code");
+                String name = resultSet.getString("s_name");
+                String address = resultSet.getString("s_address");
+                String city = resultSet.getString("s_city");
+                String phoneNumber = resultSet.getString("s_phonenumber");
+
+                System.out.printf("%-10d %-20s %-30s %-20s %-15s%n", code, name, address, city, phoneNumber);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void addNewProduct(String name, int amount, double price, int supplier ){
+        String query = "INSERT INTO product" + " (p_name, p_amount, p_price, p_supplier) " + "VALUES (?, ?, ?, ?)";
+        String checkSupplierQuery = "SELECT 1 FROM supplier WHERE s_code = ?";
+
+        try (PreparedStatement checkSup = conn.prepareStatement(checkSupplierQuery)) {
+            checkSup.setInt(1, supplier);
+            try (ResultSet rs = checkSup.executeQuery()) {
+                if (rs.next()) {
+                    try (PreparedStatement insertStmt = conn.prepareStatement(query)) {
+                        insertStmt.setString(1, name);
+                        insertStmt.setInt(2, amount);
+                        insertStmt.setDouble(3, price);
+                        insertStmt.setInt(4, supplier);
+
+                        int rowsAffected = insertStmt.executeUpdate();
+                        System.out.println("Inserted " + rowsAffected + " row(s) into product successfully.");
+                    }
+                } else {
+                    System.out.println("Error: Supplier with s_code " + supplier + " does not exist.");
+                }
+            }
 
         }catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
@@ -73,21 +133,20 @@ public class DBConnection {
 
 
     //-----CUSTOMER ACTIONS-----//
-    public void insertCustomer(int id, String firstName, String lastName,
+    public void insertCustomer(String firstName, String lastName,
                                       String email, String address, String city, String country, String phoneNumber, String password) {
-        String query = "INSERT INTO customer" + " (c_id, c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO customer" + " (c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, firstName);
-            preparedStatement.setString(3, lastName);
-            preparedStatement.setString(4, email);
-            preparedStatement.setString(5, address);
-            preparedStatement.setString(6, city);
-            preparedStatement.setString(7, country);
-            preparedStatement.setString(8, phoneNumber);
-            preparedStatement.setString(9, password);
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, address);
+            preparedStatement.setString(5, city);
+            preparedStatement.setString(6, country);
+            preparedStatement.setString(7, phoneNumber);
+            preparedStatement.setString(8, password);
 
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
