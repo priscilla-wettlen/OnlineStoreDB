@@ -83,24 +83,25 @@ public class Main {
                     isOn = true;
                     break;
                 case 4:
-                    boolean validCredentials = false;
-
-                    while (!validCredentials) {
-                        System.out.println("Enter your admin email address: ");
-                        String adminEmail = input.next();
-
-                        System.out.println("Enter your password: ");
-                        String adminPassword = input.next();
-
-                        if (conn.validateAdmin(adminEmail, adminPassword)) {
-                            System.out.println("Login successful. Accessing admin actions...");
-                            validCredentials = true;
-                            adminActionsLoop();
-                            isOn = false;
-                        } else {
-                            System.out.println("Invalid credentials. Please try again.");
-                        }
-                    }
+//                    boolean validCredentials = false;
+//
+//                    while (!validCredentials) {
+//                        System.out.println("Enter your admin email address: ");
+//                        String adminEmail = input.next();
+//
+//                        System.out.println("Enter your password: ");
+//                        String adminPassword = input.next();
+//
+//                        if (conn.validateAdmin(adminEmail, adminPassword)) {
+//                            System.out.println("Login successful. Accessing admin actions...");
+//                            validCredentials = true;
+//                            adminActionsLoop();
+//                            isOn = false;
+//                        } else {
+//                            System.out.println("Invalid credentials. Please try again.");
+//                        }
+//                    }
+                    adminActionsLoop();
                     isOn = true;
                     break;
                 case 5:
@@ -134,14 +135,14 @@ public class Main {
             switch (option) {
                 case 1:
                     System.out.println("Enter supplier's name:");
-                    String name = input.next();
+                    String sName = input.next();
                     System.out.println("Enter supplier's address:");
-                    String address = input.next();
+                    String sAddress = input.next();
                     System.out.println("Enter supplier's city:");
-                    String city = input.next();
+                    String sCity = input.next();
                     System.out.println("Enter supplier's phone number:");
-                    String phoneNumber = input.next();
-                    conn.addNewSupplier(name, address, city, phoneNumber);
+                    String sPhoneNumber = input.next();
+                    conn.addNewSupplier(sName, sAddress, sCity, sPhoneNumber);
                     isOn = true;
                     break;
                 case 2:
@@ -149,7 +150,20 @@ public class Main {
                     isOn = true;
                     break;
                 case 3:
-                    System.out.println("You have existed admin menu. You will now be redirected to main menu.");
+                    System.out.println("Enter product name:");
+                    String pName = input.next();
+                    System.out.println("Enter amount:");
+                    int pAmount = input.nextInt();
+                    System.out.println("Enter price:");
+                    double pPrice = input.nextDouble();
+                    System.out.println("Enter supplier code:");
+                    int pCode = input.nextInt();
+                    conn.addNewProduct(pName,pAmount,pPrice, pCode);
+                    isOn = true;
+                    break;
+                case 6:
+                    System.out.println("You have existed the admin menu. You will now be redirected to main menu.");
+                    System.out.println();
                     mainMenuLoop();
                     break;
             }

@@ -79,8 +79,8 @@ public class DBConnection {
     public void viewListOfSuppliers() {
         String query = "SELECT * FROM supplier";
 
-        try (PreparedStatement preparedStatement = conn.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
 
             System.out.printf("%-10s %-20s %-30s %-20s %-15s%n", "Code", "Name", "Address", "City", "Phone Number");
             System.out.println("--------------------------------------------------------------------------------------");
@@ -96,6 +96,34 @@ public class DBConnection {
             }
 
         } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void addNewProduct(String name, int amount, double price, int supplier ){
+        String query = "INSERT INTO product" + " (p_name, p_amount, p_price, p_supplier) " + "VALUES (?, ?, ?, ?)";
+        String checkSupplierQuery = "SELECT 1 FROM supplier WHERE s_code = ?";
+
+        try (PreparedStatement checkSup = conn.prepareStatement(checkSupplierQuery)) {
+            checkSup.setInt(1, supplier);
+            try (ResultSet rs = checkSup.executeQuery()) {
+                if (rs.next()) {
+                    try (PreparedStatement insertStmt = conn.prepareStatement(query)) {
+                        insertStmt.setString(1, name);
+                        insertStmt.setInt(2, amount);
+                        insertStmt.setDouble(3, price);
+                        insertStmt.setInt(4, supplier);
+
+                        int rowsAffected = insertStmt.executeUpdate();
+                        System.out.println("Inserted " + rowsAffected + " row(s) into product successfully.");
+                    }
+                } else {
+                    System.out.println("Error: Supplier with s_code " + supplier + " does not exist.");
+                }
+            }
+
+        }catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
             e.printStackTrace();
         }
