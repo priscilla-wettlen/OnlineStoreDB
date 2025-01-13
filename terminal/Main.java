@@ -79,7 +79,7 @@ public class Main {
                     String phoneNbr = input.next();
                     System.out.println("Choose a password: ");
                     String newPassword = input.next();
-                    conn.insertCustomer(3, firstName, lastName, emailAddress, address, city, country, phoneNbr, newPassword);
+                    conn.insertCustomer(firstName, lastName, emailAddress, address, city, country, phoneNbr, newPassword);
                     isOn = true;
                     break;
                 case 4:

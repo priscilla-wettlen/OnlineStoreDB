@@ -73,21 +73,20 @@ public class DBConnection {
 
 
     //-----CUSTOMER ACTIONS-----//
-    public void insertCustomer(int id, String firstName, String lastName,
+    public void insertCustomer(String firstName, String lastName,
                                       String email, String address, String city, String country, String phoneNumber, String password) {
-        String query = "INSERT INTO customer" + " (c_id, c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO customer" + " (c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, firstName);
-            preparedStatement.setString(3, lastName);
-            preparedStatement.setString(4, email);
-            preparedStatement.setString(5, address);
-            preparedStatement.setString(6, city);
-            preparedStatement.setString(7, country);
-            preparedStatement.setString(8, phoneNumber);
-            preparedStatement.setString(9, password);
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, address);
+            preparedStatement.setString(5, city);
+            preparedStatement.setString(6, country);
+            preparedStatement.setString(7, phoneNumber);
+            preparedStatement.setString(8, password);
 
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
