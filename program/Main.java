@@ -83,7 +83,7 @@ public class Main {
                     isOn = true;
                     break;
                 case 3:
-                    conn.viewStoreCatalogueAsGuest();
+                    conn.viewStoreCatalogue();
                     isOn = true;
                     break;
                 case 4:

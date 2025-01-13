@@ -157,7 +157,7 @@ public class DBConnection {
         }
     }
 
-    public void viewStoreCatalogueAsGuest(){
+    public void viewStoreCatalogue(){
         String query = "SELECT * FROM product";
 
         try (PreparedStatement ps = conn.prepareStatement(query);
