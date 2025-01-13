@@ -1,4 +1,4 @@
-package terminal;
+package program;
 
 import java.sql.*;
 import java.util.Scanner;
