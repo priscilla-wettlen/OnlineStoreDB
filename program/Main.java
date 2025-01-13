@@ -82,6 +82,10 @@ public class Main {
                     conn.insertCustomer(firstName, lastName, emailAddress, address, city, country, phoneNbr, newPassword);
                     isOn = true;
                     break;
+                case 3:
+                    conn.viewStoreCatalogueAsGuest();
+                    isOn = true;
+                    break;
                 case 4:
 //                    boolean validCredentials = false;
 //
