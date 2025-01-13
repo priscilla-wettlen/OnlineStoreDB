@@ -5,8 +5,7 @@ import java.util.Scanner;
 
 public class Main {
     static Scanner input = new Scanner(System.in);
-    static DBConnection db = new DBConnection();
-    static Connection conn = db.createConnection();
+    static DBConnection conn = new DBConnection();
 
 
     //-----MAIN MENU-----//
@@ -80,7 +79,7 @@ public class Main {
                     String phoneNbr = input.next();
                     System.out.println("Choose a password: ");
                     String newPassword = input.next();
-                    insertCustomer(3, firstName, lastName, emailAddress, address, city, country, phoneNbr, newPassword);
+                    conn.insertCustomer(3, firstName, lastName, emailAddress, address, city, country, phoneNbr, newPassword);
                     isOn = true;
                     break;
                 case 4:
@@ -93,7 +92,7 @@ public class Main {
                         System.out.println("Enter your password: ");
                         String adminPassword = input.next();
 
-                        if (validateAdmin(adminEmail, adminPassword)) {
+                        if (conn.validateAdmin(adminEmail, adminPassword)) {
                             System.out.println("Login successful. Accessing admin actions...");
                             validCredentials = true;
                             adminActionsLoop();
@@ -114,26 +113,7 @@ public class Main {
         }while(isOn);
     }
 
-    //-----ADMIN ACTIONS-----//
-    public static boolean validateAdmin(String email, String password) {
-        String query = "SELECT * FROM store_admin WHERE admin_email = ? AND a_password = ?";
-        boolean isValid = false;
-
-        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, password);
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (rs.next()) {
-                    isValid = true;
-                }
-            }
-
-        }catch (SQLException e) {
-            System.out.println("Error during select operation: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return isValid;
-    }
+    //-----ADMIN MENU-----//
 
     public static void printAdminMenu(){
         System.out.println("Welcome Admin! "  +
@@ -168,49 +148,10 @@ public class Main {
         }while(isOn);
     }
 
-    public static void addNewSupplier(){
-        String query = "INSERT INTO supplier VALUES (?, ?, ?, ?, ?)";
 
-        Connection conn = db.createConnection();
-
-        try(PreparedStatement ps = conn.prepareStatement(query)){
-
-        }catch (SQLException e) {
-            System.out.println("Error during select operation: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    //-----CUSTOMER ACTIONS-----//
-    public static void insertCustomer(int id, String firstName, String lastName,
-                                      String email, String address, String city, String country, String phoneNumber, String password) {
-        String query = "INSERT INTO customer" + " (c_id, c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, firstName);
-            preparedStatement.setString(3, lastName);
-            preparedStatement.setString(4, email);
-            preparedStatement.setString(5, address);
-            preparedStatement.setString(6, city);
-            preparedStatement.setString(7, country);
-            preparedStatement.setString(8, phoneNumber);
-            preparedStatement.setString(9, password);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
-
-        } catch (SQLException e) {
-            System.out.println("Error during insert operation: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
     public static void main(String[] args) throws SQLException {
         System.out.println("Starting the application...");
-        DBConnection db = new DBConnection();
-        Connection conn = db.createConnection();
         mainMenuLoop();
         System.out.println("Application finished.");
     }
