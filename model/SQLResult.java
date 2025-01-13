@@ -17,7 +17,7 @@ public class SQLResult {
     public void printAll()
     {
         rowCounter = 0;
-        System.out.println("rows to be printed: " + maxRow + " data size: " + data.length + " colums: " + nbrOfColumns);
+        //System.out.println("rows to be printed: " + maxRow + " data size: " + data.length + " colums: " + nbrOfColumns);
         for(int i = 0; i < maxRow; i++)
         {
             
@@ -39,6 +39,23 @@ public class SQLResult {
         {
             rowCounter = 0;
         }
+    }
+
+    public String[] getRow()
+    {
+        String[] temp = new String[nbrOfColumns];
+        for(int i = 0; i < nbrOfColumns; i++)
+        {
+            temp[i] = data[(rowCounter*nbrOfColumns) + i];
+            
+        }
+       
+        rowCounter++;
+        if(rowCounter == maxRow)
+        {
+            rowCounter = 0;
+        }
+        return temp;
     }
 
     public void resetRowCounter()

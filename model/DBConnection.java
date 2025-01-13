@@ -51,15 +51,45 @@ public class DBConnection {
 
             
 
-            System.out.println(query);
+            //System.out.println(query);
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println("Inserted " + rowsAffected + " row(s) into " + table + " successfully.");
+            return true;
 
         } catch (SQLException e) {
             System.out.println("Error during insert operation: " + e.getMessage());
             e.printStackTrace();
         }
 
+
+        return false;
+    }
+
+    public boolean alterData(Connection connection, String table, String[] alteredColumns, String[] newData, String condition)
+    {
+        String query = "UPDATE " + table + " SET " + alteredColumns[0] + " = " + newData[0];
+        for(int i = 1; i < newData.length; i++)
+        {
+            query = query + ", " + alteredColumns[0] + " = " + newData[0];
+        }
+        if(condition != null)
+        {
+            query = query + " WHERE " + condition;
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            
+
+            //System.out.println(query);
+            int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println("Altered " + rowsAffected + " row(s) in " + table + " successfully.");
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return false;
     }
@@ -87,7 +117,7 @@ public class DBConnection {
                     }
                 }
                 
-                System.out.println(counter);
+                //System.out.println(counter);
 
                 String[] tempData = new String[counter];
                 for(int i = 0; i < counter; i++)
