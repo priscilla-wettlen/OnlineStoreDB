@@ -133,11 +133,19 @@ public class Main {
             int option = readMenuChoice();
             switch (option) {
                 case 1:
-                    System.out.println("This is something");
+                    System.out.println("Enter supplier's name:");
+                    String name = input.next();
+                    System.out.println("Enter supplier's address:");
+                    String address = input.next();
+                    System.out.println("Enter supplier's city:");
+                    String city = input.next();
+                    System.out.println("Enter supplier's phone number:");
+                    String phoneNumber = input.next();
+                    conn.addNewSupplier(name, address, city, phoneNumber);
                     isOn = true;
                     break;
                 case 2:
-                    System.out.println("This is something else");
+                    conn.viewListOfSuppliers();
                     isOn = true;
                     break;
                 case 3:

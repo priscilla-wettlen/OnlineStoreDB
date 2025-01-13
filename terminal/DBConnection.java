@@ -39,7 +39,7 @@ public class DBConnection {
     //-----ADMIN ACTIONS-----//
 
     public boolean validateAdmin(String email, String password) {
-        String query = "SELECT * FROM store_admin WHERE admin_email = ? AND a_password = ?";
+        String query = "SELECT * FROM store_admin WHERE a_email = ? AND a_password = ?";
         boolean isValid = false;
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -58,12 +58,44 @@ public class DBConnection {
         return isValid;
     }
 
-    public void addNewSupplier(){
-        String query = "INSERT INTO supplier VALUES (?, ?, ?, ?, ?)";
+    public void addNewSupplier(String name, String address, String city, String phonenumber){
+        String query = "INSERT INTO supplier" + " (s_name, s_address, s_city, s_phonenumber) " + "VALUES (?, ?, ?, ?)";
 
         try(PreparedStatement ps = conn.prepareStatement(query)){
+            ps.setString(1, name);
+            ps.setString(2, address);
+            ps.setString(3, city);
+            ps.setString(4, phonenumber);
+
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Inserted " + rowsAffected + " row(s) into supplier successfully.");
 
         }catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void viewListOfSuppliers() {
+        String query = "SELECT * FROM supplier";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.printf("%-10s %-20s %-30s %-20s %-15s%n", "Code", "Name", "Address", "City", "Phone Number");
+            System.out.println("--------------------------------------------------------------------------------------");
+
+            while (resultSet.next()) {
+                int code = resultSet.getInt("s_code");
+                String name = resultSet.getString("s_name");
+                String address = resultSet.getString("s_address");
+                String city = resultSet.getString("s_city");
+                String phoneNumber = resultSet.getString("s_phonenumber");
+
+                System.out.printf("%-10d %-20s %-30s %-20s %-15s%n", code, name, address, city, phoneNumber);
+            }
+
+        } catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
             e.printStackTrace();
         }
