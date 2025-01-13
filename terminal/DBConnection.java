@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
     private static final String USER = "aj6817";
-    private static final String PASSWORD = System.getenv("CRED");
+    private static final String PASSWORD = "ywv0moz1";
 
     public Connection createConnection() {
         Connection connection = null;
