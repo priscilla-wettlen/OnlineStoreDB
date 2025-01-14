@@ -174,14 +174,19 @@ public class Main {
                     isOn = true;
                     break;
                 case 5:
-                    System.out.println("Enter the discount code. This is the code that shoppers will use: ");
+                    System.out.println("Enter a 6-character discount code. This is the code that shoppers will use: ");
                     String dCode = input.next();
-                    System.out.println("Enter the discount amount as a decimal. Ex. 10% = 0.10: ");
+                    System.out.println("Enter the discount amount as a decimal. Ex. 10% = 0,10: ");
                     double amount = input.nextDouble();
                     System.out.println("Enter the start date for this discount in the format YYYY-MM-DD: ");
                     String startDate = input.next();
                     System.out.println("Enter the end date for this discount in the format YYYY-MM-DD: ");
                     String endDate = input.next();
+                    System.out.println("Enter the code of the product for which this discount is valid: ");
+                    int productCode = input.nextInt();
+                    conn.addNewDiscount(dCode, amount, startDate,endDate, productCode);
+                    isOn = true;
+                    break;
                 case 6:
                     System.out.println("You have existed the admin menu. You will now be redirected to main menu.");
                     System.out.println();

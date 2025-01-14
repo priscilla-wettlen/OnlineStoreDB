@@ -1,6 +1,9 @@
 package program;
 
 import java.sql.*;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
@@ -109,13 +112,13 @@ public class DBConnection {
             checkSup.setInt(1, supplier);
             try (ResultSet rs = checkSup.executeQuery()) {
                 if (rs.next()) {
-                    try (PreparedStatement insertStmt = conn.prepareStatement(query)) {
-                        insertStmt.setString(1, name);
-                        insertStmt.setInt(2, amount);
-                        insertStmt.setDouble(3, price);
-                        insertStmt.setInt(4, supplier);
+                    try (PreparedStatement ps = conn.prepareStatement(query)) {
+                        ps.setString(1, name);
+                        ps.setInt(2, amount);
+                        ps.setDouble(3, price);
+                        ps.setInt(4, supplier);
 
-                        int rowsAffected = insertStmt.executeUpdate();
+                        int rowsAffected = ps.executeUpdate();
                         System.out.println("Inserted " + rowsAffected + " row(s) into product successfully.");
                     }
                 } else {
@@ -151,6 +154,37 @@ public class DBConnection {
             }
         } catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void addNewDiscount(String discountCode, double discountAmount, String startDate, String endDate, int productCode) {
+        String query = "INSERT INTO discount (d_discount_code, d_amount, d_date_start, d_date_end, d_product_code) VALUES (?, ?, ?, ?, ?)";
+        String checkProductQuery = "SELECT 1 FROM product WHERE p_code = ?";
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        try (PreparedStatement checkProd = conn.prepareStatement(checkProductQuery)) {
+            checkProd.setInt(1, productCode);
+            try (ResultSet rs = checkProd.executeQuery()) {
+                if (rs.next()) {
+                    try (PreparedStatement ps = conn.prepareStatement(query)) {
+                        ps.setString(1, discountCode);
+                        ps.setDouble(2, discountAmount);
+                        ps.setDate(3, new Date(sdf.parse(startDate).getTime()));
+                        ps.setDate(4, new Date(sdf.parse(endDate).getTime()));
+                        ps.setInt(5, productCode);
+
+                        int rowsAffected = ps.executeUpdate();
+                        System.out.println("Inserted " + rowsAffected + " row(s) into discount successfully.");
+                    }
+                } else {
+                    System.out.println("Product with code " + productCode + " does not exist.");
+                }
+            }
+        } catch (ParseException e) {
+            System.out.println("Error parsing date: " + e.getMessage());
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
