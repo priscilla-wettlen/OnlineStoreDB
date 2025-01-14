@@ -165,6 +165,23 @@ public class Main {
                     conn.addNewProduct(pName,pAmount,pPrice, pCode);
                     isOn = true;
                     break;
+                case 4:
+                    //TODO This is to delete a product. Missing delete function
+                    conn.viewProductList();
+                    System.out.println();
+                    System.out.println("Enter the code of the product you'd like to delete: ");
+                    input.nextInt();
+                    isOn = true;
+                    break;
+                case 5:
+                    System.out.println("Enter the discount code. This is the code that shoppers will use: ");
+                    String dCode = input.next();
+                    System.out.println("Enter the discount amount as a decimal. Ex. 10% = 0.10: ");
+                    double amount = input.nextDouble();
+                    System.out.println("Enter the start date for this discount in the format YYYY-MM-DD: ");
+                    String startDate = input.next();
+                    System.out.println("Enter the end date for this discount in the format YYYY-MM-DD: ");
+                    String endDate = input.next();
                 case 6:
                     System.out.println("You have existed the admin menu. You will now be redirected to main menu.");
                     System.out.println();
