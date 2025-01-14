@@ -101,7 +101,7 @@ public class DBConnection {
         }
     }
 
-    public void addNewProduct(String name, int amount, double price, int supplier ){
+    public void addNewProduct(String name, int amount, double price, int supplier){
         String query = "INSERT INTO product" + " (p_name, p_amount, p_price, p_supplier) " + "VALUES (?, ?, ?, ?)";
         String checkSupplierQuery = "SELECT 1 FROM supplier WHERE s_code = ?";
 
@@ -130,7 +130,30 @@ public class DBConnection {
     }
 
 
+    public void viewProductList(){
+        String query = "SELECT * FROM product";
 
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+            System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
+            System.out.println("-------------------------------------------------------------"
+                    + "--------------------------------------------------------");
+
+            while (resultSet.next()) {
+                int code = resultSet.getInt("p_code");
+                String name = resultSet.getString("p_name");
+                int amount = resultSet.getInt("p_amount");
+                double price = resultSet.getDouble("p_price");
+                String supplier = resultSet.getString("p_supplier");
+
+                System.out.printf("%-10d %-20s %-20d %-10.2f %-20s%n", code, name, amount, price, supplier);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     //-----CUSTOMER ACTIONS-----//
     public void insertCustomer(String firstName, String lastName,
