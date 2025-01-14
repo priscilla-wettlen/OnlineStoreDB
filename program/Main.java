@@ -165,6 +165,10 @@ public class Main {
                     conn.addNewProduct(pName,pAmount,pPrice, pCode);
                     isOn = true;
                     break;
+                case 4:
+                    conn.viewProductList();
+                    isOn = true;
+                    break;
                 case 6:
                     System.out.println("You have existed the admin menu. You will now be redirected to main menu.");
                     System.out.println();
