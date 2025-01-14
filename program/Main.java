@@ -7,7 +7,7 @@ public class Main {
     static Scanner input = new Scanner(System.in);
     static DBConnection conn = new DBConnection();
     static Customer currCustomer = new Customer("placeHolder", "placeHolder", -1);
-    static CustomerMenu customerMenu;
+    static CustomerMenu customerMenu = new CustomerMenu(currCustomer, conn);
 
     //sad@sds.com
     //asddsds
@@ -73,8 +73,7 @@ public class Main {
 
                             System.out.println("Login successful. Accessing customer view...");
                             validCredentials = true;
-                            
-                            //CUSTOMER MENU CALL HERE
+                            customerMenu.mainCustomerLoop();
                             isOn = false;
                         } 
                         else 
