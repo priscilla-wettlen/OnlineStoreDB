@@ -133,6 +133,30 @@ public class DBConnection {
 
 
     //-----CUSTOMER ACTIONS-----//
+    public boolean validateCustomer(String email, String password, Customer customer) {
+        String query = "SELECT * FROM customer WHERE c_email = ? AND c_password = ?";
+        boolean isValid = false;
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, password);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if(rs.next())
+                {
+                    isValid = true;
+                    customer.setUserID(rs.getInt("c_id"));
+                    customer.setfName(rs.getString("c_first_name"));
+                    customer.setlName(rs.getString("c_last_name"));
+                }
+            }
+
+        }catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return isValid;
+    }
+
     public void insertCustomer(String firstName, String lastName,
                                       String email, String address, String city, String country, String phoneNumber, String password) {
         String query = "INSERT INTO customer" + " (c_first_name, c_last_name, c_email, c_address, c_city, c_country, c_phonenumber, c_password) " +
