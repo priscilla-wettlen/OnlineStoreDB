@@ -127,7 +127,7 @@ public class DBConnection {
             }
 
         }catch (SQLException e) {
-            System.out.println("Error during select operation: " + e.getMessage());
+            System.out.println("Error during operation: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -154,6 +154,30 @@ public class DBConnection {
             }
         } catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteProduct(int code){
+        String query = "DELETE FROM product WHERE p_code = ?";
+        String checkProductCode = "SELECT 1 FROM product WHERE p_code = ?";
+
+        try (PreparedStatement checkCode = conn.prepareStatement(checkProductCode)) {
+            checkCode.setInt(1, code);
+            try (ResultSet rs = checkCode.executeQuery()) {
+                if (rs.next()) {
+                    try (PreparedStatement ps = conn.prepareStatement(query)) {
+                        ps.setInt(1, code);
+                        int rowsAffected = ps.executeUpdate();
+                        System.out.println("Deleted " + rowsAffected + " row from product successfully.");
+                    }
+                } else {
+                    System.out.println("Error: Product with p_code " + code + " does not exist.");
+                }
+            }
+
+        }catch(SQLException e){
+            System.out.println("Error during operation: " + e.getMessage());
             e.printStackTrace();
         }
     }
