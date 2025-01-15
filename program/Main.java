@@ -166,11 +166,11 @@ public class Main {
                     isOn = true;
                     break;
                 case 4:
-                    //TODO This is to delete a product. Missing delete function
                     conn.viewProductList();
                     System.out.println();
                     System.out.println("Enter the code of the product you'd like to delete: ");
-                    input.nextInt();
+                    int productToDelete = input.nextInt();
+                    conn.deleteProduct(productToDelete);
                     isOn = true;
                     break;
                 case 5:
