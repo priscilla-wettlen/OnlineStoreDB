@@ -170,9 +170,8 @@ public class DBConnection {
         }
     }
 
-    public boolean findProductByCode(int code){
+    public void findProductByCode(int code){
         String pCodeQuery = "SELECT * FROM product WHERE p_code = ?";
-        boolean found = false;
 
         try (PreparedStatement ps = conn.prepareStatement(pCodeQuery)) {
             ps.setInt(1, code);
@@ -186,7 +185,7 @@ public class DBConnection {
                     String name = rs.getString("p_name");
                     int amount = rs.getInt("p_amount");
                     double price = rs.getDouble("p_price");
-                    String supplier = rs.getString("p_supplier");
+                    int supplier = rs.getInt("p_supplier");
 
                     System.out.printf("%-10d %-20s %-20d %-10.2f %-20s%n", code, name, amount, price, supplier);
                 }
@@ -199,33 +198,64 @@ public class DBConnection {
             e.printStackTrace();
         }
 
-//        try (PreparedStatement ps = conn.prepareStatement(pCodeQuery);
-//             ResultSet resultSet = ps.executeQuery()) {
-//
-//            System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
-//            System.out.println("-------------------------------------------------------------"
-//                    + "--------------------------------------------------------");
-//
-//            while (resultSet.next()) {
-//                int code = resultSet.getInt("p_code");
-//                String name = resultSet.getString("p_name");
-//                int amount = resultSet.getInt("p_amount");
-//                double price = resultSet.getDouble("p_price");
-//                String supplier = resultSet.getString("p_supplier");
-//
-//                System.out.printf("%-10d %-20s %-20d %-10.2f %-20s%n", code, name, amount, price, supplier);
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error during select operation: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-
-        return found;
     }
 
-    public void findProductByName(){}
+    public void findProductByName(String productName){
+        String pNameQuery = "SELECT * FROM product WHERE p_name = ?";
 
-    public void findProductBySupplier(){}
+        try (PreparedStatement ps = conn.prepareStatement(pNameQuery)) {
+            ps.setString(1, productName);
+            try (ResultSet rs = ps.executeQuery()) {
+                System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
+                System.out.println("-------------------------------------------------------------"
+                        + "--------------------------------------------------------");
+
+                while (rs.next()) {
+                    int code = rs.getInt("p_code");
+                    productName = rs.getString("p_name");
+                    int amount = rs.getInt("p_amount");
+                    double price = rs.getDouble("p_price");
+                    int supplier = rs.getInt("p_supplier");
+
+                    System.out.printf("%-10d %-20s %-20d %-10.2f %-20s%n", code, productName, amount, price, supplier);
+                }
+            }
+
+
+
+        }catch (SQLException e) {
+            System.out.println("Error during operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void findProductBySupplier(int supplierCode){
+        String getSupplierName = "SELECT pr.p_code, pr.p_name, pr.p_amount, pr.p_price, sup.s_name " +
+                "FROM product pr " +
+                "JOIN supplier sup ON pr.p_supplier = sup.s_code " +
+                "WHERE sup.s_code = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(getSupplierName)) {
+            ps.setInt(1, supplierCode);
+            try (ResultSet rs = ps.executeQuery()) {
+                System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
+                System.out.println("-------------------------------------------------------------"
+                        + "--------------------------------------------------------");
+                while (rs.next()) {
+                    int productCode = rs.getInt("p_code");
+                    String productName = rs.getString("p_name");
+                    int amount = rs.getInt("p_amount");
+                    double productPrice = rs.getDouble("p_price");
+                    String supplierName = rs.getString("s_name");
+
+                    System.out.printf("%-10d %-20s %-20d %-10.2f %-20s%n", productCode, productName, amount, productPrice, supplierName);
+                }
+            }
+        }catch (SQLException e) {
+            System.out.println("Error during operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public void deleteProduct(int code){
         String query = "DELETE FROM product WHERE p_code = ?";

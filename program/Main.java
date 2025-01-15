@@ -187,11 +187,13 @@ public class Main {
                         case 2:
                             System.out.println("Enter product name:");
                             String searchProductName = input.next();
+                            conn.findProductByName(searchProductName);
                             adminActionsLoop();
                             break;
                         case 3:
                             System.out.println("Enter supplier's code:");
                             int searchSupplierCode = input.nextInt();
+                            conn.findProductBySupplier(searchSupplierCode);
                             adminActionsLoop();
                             break;
                         case 4:
