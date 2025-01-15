@@ -33,7 +33,7 @@ public class Main {
             }
 
             option = input.nextInt();
-
+            //TODO MODIFY TO MAKE IT REUSABLE FOR ALL MENUS
             if (option >= 0 && option <= 8) {
                 isValidInput = true;
             } else {
@@ -106,7 +106,6 @@ public class Main {
 //                        }
 //                    }
                     adminActionsLoop();
-                    isOn = true;
                     break;
                 case 5:
                     System.out.println("Hejdå!");
@@ -114,6 +113,7 @@ public class Main {
                     break;
                 default:
                     System.out.println("Invalid option!");
+                    break;
             }
         }while(isOn);
     }
@@ -126,13 +126,14 @@ public class Main {
         System.out.println("1. Add a new supplier");
         System.out.println("2. View list of suppliers");
         System.out.println("3. Add a new product");
-        System.out.println("4. Delete a product");
-        System.out.println("5. Add a new discount");
-        System.out.println("6. Exit");
+        System.out.println("4. Find a product");
+        System.out.println("5. Delete a product");
+        System.out.println("6. Add a new discount");
+        System.out.println("7 . Exit");
     }
 
     public static void adminActionsLoop(){
-        boolean isOn = false;
+        boolean isOnActive = false;
         do{
             printAdminMenu();
             int option = readMenuChoice();
@@ -147,11 +148,11 @@ public class Main {
                     System.out.println("Enter supplier's phone number:");
                     String sPhoneNumber = input.next();
                     conn.addNewSupplier(sName, sAddress, sCity, sPhoneNumber);
-                    isOn = true;
+                    isOnActive = true;
                     break;
                 case 2:
                     conn.viewListOfSuppliers();
-                    isOn = true;
+                    isOnActive = true;
                     break;
                 case 3:
                     System.out.println("Enter product name:");
@@ -163,17 +164,50 @@ public class Main {
                     System.out.println("Enter supplier code:");
                     int pCode = input.nextInt();
                     conn.addNewProduct(pName,pAmount,pPrice, pCode);
-                    isOn = true;
+                    isOnActive = true;
                     break;
                 case 4:
+                    conn.viewProductList();
+                    System.out.println();
+                    boolean isActive = false;
+                    System.out.println("Find a product: \n ");
+                    System.out.println("1. By code");
+                    System.out.println("2. By name");
+                    System.out.println("3. By supplier");
+                    System.out.println("4. Exit");
+
+                    int choice = readMenuChoice();
+                    switch (choice) {
+                        case 1:
+                            System.out.println("Enter product code:");
+                            int searchProductCode = input.nextInt();
+                            conn.findProductByCode(searchProductCode);
+                            adminActionsLoop();
+                            break;
+                        case 2:
+                            System.out.println("Enter product name:");
+                            String searchProductName = input.next();
+                            adminActionsLoop();
+                            break;
+                        case 3:
+                            System.out.println("Enter supplier's code:");
+                            int searchSupplierCode = input.nextInt();
+                            adminActionsLoop();
+                            break;
+                        case 4:
+                            adminActionsLoop();
+                            break;
+                    }
+                    break;
+                case 5:
                     conn.viewProductList();
                     System.out.println();
                     System.out.println("Enter the code of the product you'd like to delete: ");
                     int productToDelete = input.nextInt();
                     conn.deleteProduct(productToDelete);
-                    isOn = true;
+                    isOnActive = true;
                     break;
-                case 5:
+                case 6:
                     System.out.println("Enter a 6-character discount code. This is the code that shoppers will use: ");
                     String dCode = input.next();
                     System.out.println("Enter the discount amount as a decimal. Ex. 10% = 0,10: ");
@@ -185,15 +219,19 @@ public class Main {
                     System.out.println("Enter the code of the product for which this discount is valid: ");
                     int productCode = input.nextInt();
                     conn.addNewDiscount(dCode, amount, startDate,endDate, productCode);
-                    isOn = true;
+                    isOnActive = true;
                     break;
-                case 6:
-                    System.out.println("You have existed the admin menu. You will now be redirected to main menu.");
+                case 7:
+                    System.out.println("You have exited the admin menu. You will now be redirected to main menu.");
                     System.out.println();
                     mainMenuLoop();
+                    isOnActive = false;
+                    break;
+                default:
+                    System.out.println("Invalid option!");
                     break;
             }
-        }while(isOn);
+        }while(isOnActive);
     }
 
 

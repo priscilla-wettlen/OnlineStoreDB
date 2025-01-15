@@ -27,6 +27,7 @@ public class DBConnection {
                     String name = resultSet.getString("c_first_name");
                     //System.out.println("Name: " + name);
                 }
+
             }
 
         } catch (ClassNotFoundException e) {
@@ -37,6 +38,17 @@ public class DBConnection {
             e.printStackTrace();
         }
 
+    }
+
+    public void closeConnection() {
+        if (conn != null) {
+            try {
+                conn.close();
+                System.out.println("Disconnected from the database.");
+            } catch (SQLException e) {
+                System.err.println("Error while disconnecting: " + e.getMessage());
+            }
+        }
     }
 
     //-----ADMIN ACTIONS-----//
@@ -157,6 +169,63 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
+
+    public boolean findProductByCode(int code){
+        String pCodeQuery = "SELECT * FROM product WHERE p_code = ?";
+        boolean found = false;
+
+        try (PreparedStatement ps = conn.prepareStatement(pCodeQuery)) {
+            ps.setInt(1, code);
+            try (ResultSet rs = ps.executeQuery()) {
+                System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
+                System.out.println("-------------------------------------------------------------"
+                        + "--------------------------------------------------------");
+
+                while (rs.next()) {
+                    code = rs.getInt("p_code");
+                    String name = rs.getString("p_name");
+                    int amount = rs.getInt("p_amount");
+                    double price = rs.getDouble("p_price");
+                    String supplier = rs.getString("p_supplier");
+
+                    System.out.printf("%-10d %-20s %-20d %-10.2f %-20s%n", code, name, amount, price, supplier);
+                }
+            }
+
+
+
+        }catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+//        try (PreparedStatement ps = conn.prepareStatement(pCodeQuery);
+//             ResultSet resultSet = ps.executeQuery()) {
+//
+//            System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
+//            System.out.println("-------------------------------------------------------------"
+//                    + "--------------------------------------------------------");
+//
+//            while (resultSet.next()) {
+//                int code = resultSet.getInt("p_code");
+//                String name = resultSet.getString("p_name");
+//                int amount = resultSet.getInt("p_amount");
+//                double price = resultSet.getDouble("p_price");
+//                String supplier = resultSet.getString("p_supplier");
+//
+//                System.out.printf("%-10d %-20s %-20d %-10.2f %-20s%n", code, name, amount, price, supplier);
+//            }
+//        } catch (SQLException e) {
+//            System.out.println("Error during select operation: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+
+        return found;
+    }
+
+    public void findProductByName(){}
+
+    public void findProductBySupplier(){}
 
     public void deleteProduct(int code){
         String query = "DELETE FROM product WHERE p_code = ?";
