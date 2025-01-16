@@ -6,7 +6,11 @@ import java.util.Scanner;
 public class Main {
     static Scanner input = new Scanner(System.in);
     static DBConnection conn = new DBConnection();
+    static Customer currCustomer = new Customer("placeHolder", "placeHolder", -1);
+    static CustomerMenu customerMenu = new CustomerMenu(currCustomer, conn);
 
+    //sad@sds.com
+    //asddsds
 
     //-----MAIN MENU-----//
     public static void PrintLoginMenu(){
@@ -55,11 +59,28 @@ public class Main {
 
             switch(option){
                 case 1:
-                    System.out.println("Enter your email address: ");
-                    String email = input.next();
-                    System.out.println("Enter your password: ");
-                    String password = input.next();
-                    isOn = true;
+                    boolean validCredentials = false;
+
+                    while (!validCredentials) {
+                        System.out.println("Enter your email address: ");
+                        String email = input.next();
+                     
+                        System.out.println("Enter your password: ");
+                        String password = input.next();
+                     
+                        if (conn.validateCustomer(email, password, currCustomer)) 
+                        {
+
+                            System.out.println("Login successful. Accessing customer view...");
+                            validCredentials = true;
+                            customerMenu.mainCustomerLoop();
+                            isOn = false;
+                        } 
+                        else 
+                        {
+                            System.out.println("Invalid credentials. Please try again.");
+                        }
+                    }
                     break;
                 case 2:
                     //TODO Fix the spacing. It needs to be able to take spaces. Same problem i had with U1
