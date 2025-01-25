@@ -281,9 +281,11 @@ public class DBConnection {
         }
     }
 
-    public void addNewDiscount(String discountCode, double discountAmount, String startDate, String endDate, int productCode) {
+    //TODO Modify to add discount category
+    public void addNewDiscount(String discountCode, double discountAmount, String startDate, String endDate, int productCode, String discountCategory) {
         String query = "INSERT INTO discount (d_discount_code, d_amount, d_date_start, d_date_end, d_product_code) VALUES (?, ?, ?, ?, ?)";
         String checkProductQuery = "SELECT 1 FROM product WHERE p_code = ?";
+        //String categoryQuery = "SELECT d.d_discount_code" + "FROM discount d" + "JOIN discount_category dic ON d.d_discount_code = dic.dc_code" + "WHERE dic.dc_category_name = discountCategory";
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -300,6 +302,10 @@ public class DBConnection {
 
                         int rowsAffected = ps.executeUpdate();
                         System.out.println("Inserted " + rowsAffected + " row(s) into discount successfully.");
+
+//                        try(PreparedStatement addCategory = conn.prepareStatement(categoryQuery)) {
+//                            addCategory.setString(1, discountCategory);
+//                        }
                     }
                 } else {
                     System.out.println("Product with code " + productCode + " does not exist.");
@@ -308,6 +314,27 @@ public class DBConnection {
         } catch (ParseException e) {
             System.out.println("Error parsing date: " + e.getMessage());
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showDiscountCategoryTable() {
+        String query = "Select * FROM discount_category";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+            System.out.printf("%-10s %-30s%n", "ID", "Category name");
+            System.out.println( "--------------------------------------------------------");
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("dc_category_id");
+                String categoryName = resultSet.getString("dc_category_name");
+
+                System.out.printf("%-10d %-30s%n", id, categoryName);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
             e.printStackTrace();
         }
     }

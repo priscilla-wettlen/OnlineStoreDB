@@ -150,7 +150,8 @@ public class Main {
         System.out.println("4. Find a product");
         System.out.println("5. Delete a product");
         System.out.println("6. Add a new discount");
-        System.out.println("7 . Exit");
+        System.out.println("7. Create a new discount category");
+        System.out.println("8. Exit admin menu");
     }
 
     public static void adminActionsLoop(){
@@ -239,12 +240,19 @@ public class Main {
                     String startDate = input.next();
                     System.out.println("Enter the end date for this discount in the format YYYY-MM-DD: ");
                     String endDate = input.next();
+                    System.out.println();
+                    conn.viewProductList();
                     System.out.println("Enter the code of the product for which this discount is valid: ");
                     int productCode = input.nextInt();
-                    conn.addNewDiscount(dCode, amount, startDate,endDate, productCode);
+                    //TODO Fix values in method
+                    //conn.addNewDiscount(dCode, amount, startDate,endDate, productCode);
                     isOnActive = true;
                     break;
                 case 7:
+                    System.out.println("Enter discount code:");
+                    String discountCode = input.next();
+                    System.out.println("Give a name to the category");
+                case 8:
                     System.out.println("You have exited the admin menu. You will now be redirected to main menu.");
                     System.out.println();
                     mainMenuLoop();
