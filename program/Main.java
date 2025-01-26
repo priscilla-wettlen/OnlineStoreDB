@@ -108,24 +108,24 @@ public class Main {
                     isOn = true;
                     break;
                 case 4:
-//                    boolean validCredentials = false;
-//
-//                    while (!validCredentials) {
-//                        System.out.println("Enter your admin email address: ");
-//                        String adminEmail = input.next();
-//
-//                        System.out.println("Enter your password: ");
-//                        String adminPassword = input.next();
-//
-//                        if (conn.validateAdmin(adminEmail, adminPassword)) {
-//                            System.out.println("Login successful. Accessing admin actions...");
-//                            validCredentials = true;
-//                            adminActionsLoop();
-//                            isOn = false;
-//                        } else {
-//                            System.out.println("Invalid credentials. Please try again.");
-//                        }
-//                    }
+                    boolean validAdminCredentials = false;
+
+                    while (!validAdminCredentials) {
+                        System.out.println("Enter your admin email address: ");
+                        String adminEmail = input.next();
+
+                        System.out.println("Enter your password: ");
+                        String adminPassword = input.next();
+
+                        if (conn.validateAdmin(adminEmail, adminPassword)) {
+                            System.out.println("Login successful. Accessing admin actions...");
+                            validAdminCredentials = true;
+                            adminActionsLoop();
+                            isOn = false;
+                        } else {
+                            System.out.println("Invalid credentials. Please try again.");
+                        }
+                    }
                     adminActionsLoop();
                     break;
                 case 5:
