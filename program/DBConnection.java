@@ -281,9 +281,8 @@ public class DBConnection {
         }
     }
 
-    //TODO Modify to add discount category
-    public void addNewDiscount(String discountCode, double discountAmount, String startDate, String endDate, int productCode, String discountCategory) {
-        String query = "INSERT INTO discount (d_discount_code, d_amount, d_date_start, d_date_end, d_product_code) VALUES (?, ?, ?, ?, ?)";
+    public void addNewDiscount(String discountCode, double discountAmount,  int category_id, String startDate, String endDate, int productCode) {
+        String query = "INSERT INTO discount (d_discount_code, d_amount, d_category_id, d_date_start, d_date_end, d_product_code) VALUES (?, ?, ?, ?, ?, ?)";
         String checkProductQuery = "SELECT 1 FROM product WHERE p_code = ?";
         //String categoryQuery = "SELECT d.d_discount_code" + "FROM discount d" + "JOIN discount_category dic ON d.d_discount_code = dic.dc_code" + "WHERE dic.dc_category_name = discountCategory";
 
@@ -296,16 +295,14 @@ public class DBConnection {
                     try (PreparedStatement ps = conn.prepareStatement(query)) {
                         ps.setString(1, discountCode);
                         ps.setDouble(2, discountAmount);
-                        ps.setDate(3, new Date(sdf.parse(startDate).getTime()));
-                        ps.setDate(4, new Date(sdf.parse(endDate).getTime()));
-                        ps.setInt(5, productCode);
+                        ps.setInt(3, category_id);
+                        ps.setDate(4, new Date(sdf.parse(startDate).getTime()));
+                        ps.setDate(5, new Date(sdf.parse(endDate).getTime()));
+                        ps.setInt(6, productCode);
 
                         int rowsAffected = ps.executeUpdate();
                         System.out.println("Inserted " + rowsAffected + " row(s) into discount successfully.");
 
-//                        try(PreparedStatement addCategory = conn.prepareStatement(categoryQuery)) {
-//                            addCategory.setString(1, discountCategory);
-//                        }
                     }
                 } else {
                     System.out.println("Product with code " + productCode + " does not exist.");

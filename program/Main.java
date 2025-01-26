@@ -236,6 +236,11 @@ public class Main {
                     String dCode = input.next();
                     System.out.println("Enter the discount amount as a decimal. Ex. 10% = 0,10: ");
                     double amount = input.nextDouble();
+                    System.out.println();
+                    conn.showDiscountCategoryTable();
+                    System.out.println();
+                    System.out.println("Select a category for this discount: ");
+                    int d_category = input.nextInt();
                     System.out.println("Enter the start date for this discount in the format YYYY-MM-DD: ");
                     String startDate = input.next();
                     System.out.println("Enter the end date for this discount in the format YYYY-MM-DD: ");
@@ -245,7 +250,7 @@ public class Main {
                     System.out.println("Enter the code of the product for which this discount is valid: ");
                     int productCode = input.nextInt();
                     //TODO Fix values in method
-                    //conn.addNewDiscount(dCode, amount, startDate,endDate, productCode);
+                    conn.addNewDiscount(dCode, amount, d_category, startDate,endDate, productCode);
                     isOnActive = true;
                     break;
                 case 7:
