@@ -1,7 +1,6 @@
 package program;
 
 import java.sql.*;
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -385,5 +384,150 @@ public class DBConnection {
         }
     }
 
+    public void viewCurrentShipment(int currID){
+        String query = "SELECT p_name, si_amount, p_price FROM shipment_item INNER JOIN product ON product.p_code = shipment_item.si_product WHERE si_shipmentid = " + currID;
 
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+            System.out.printf("%-10s %-20s %-30s%n", "Product", "Ordered units", "Price");
+            System.out.println("------------------------------------------------------------");
+            
+            double totalPrice = 0;
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("p_name");
+                int amount = resultSet.getInt("si_amount");
+                double price = resultSet.getDouble("p_price");
+
+                totalPrice = totalPrice + (amount * price);
+
+                System.out.printf("%-10s %-20s %-30s%n", name, amount, price);
+                System.out.println();
+            }
+
+            System.out.println("Total price of order is: " + totalPrice);
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public int nextShipmentID()
+    {
+        int temp = 1;
+
+        String query = "SELECT MAX(s_id) FROM shipment";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet resultSet = ps.executeQuery()) {
+            resultSet.next();
+            temp = resultSet.getInt("max");
+            temp++;
+
+            //System.out.println(temp);
+            /* 
+            while (resultSet.next()) {
+                int test = resultSet.getInt("s_id");
+                if(test >= temp)
+                {
+                    temp = test;
+                    temp++;
+                }
+            }
+            */
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return temp;
+    }
+
+    public boolean validateProductStock(String name, int amountNeeded)
+    {
+        String query = "SELECT p_amount FROM product WHERE(p_name = '" + name + "')";
+        try (PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet resultSet = ps.executeQuery()) {
+            
+            resultSet.next();
+            int amount = resultSet.getInt("p_amount");
+            if(amount >= amountNeeded)
+            {
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean createShipment(Customer customer)
+    {
+        String query = "INSERT INTO shipment (s_customer, s_confirmed) VALUES (" + customer.getUserID() + ", false)";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            int rowsAffected = preparedStatement.executeUpdate();
+            return true;
+            //System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public void addItemtoShipment(int cartID, int id, int amount)
+    {
+        String query = "INSERT INTO shipment_item OVERRIDING SYSTEM VALUE VALUES (" + id + ", " + amount + ", " + cartID + ")";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            int rowsAffected = preparedStatement.executeUpdate();
+            //System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void removeStock(int id, int amount)
+    {
+        String query = "UPDATE product SET p_amount = p_amount - " + amount + " WHERE p_code = " + id;
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            int rowsAffected = preparedStatement.executeUpdate();
+            //System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public int findProductID(String name)
+    {
+        String query = "SELECT p_code FROM product WHERE(p_name = '" + name + "')";
+        try (PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet resultSet = ps.executeQuery()) {
+            
+            resultSet.next();
+            return resultSet.getInt("p_code");
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    
 }

@@ -5,11 +5,27 @@ public class CustomerMenu {
     static Scanner input = new Scanner(System.in);
     Customer customer;
     DBConnection conn;
+    int cartID = 0;
+    boolean cartIsCreated = false;
 
     public CustomerMenu(Customer customer, DBConnection conn) {
         this.customer = customer;
         this.conn = conn;
+
+        cartID = conn.nextShipmentID();
     }
+
+    /*
+    shipment
+    customer id, int
+    shipment id, int
+    confirmed, bool <-- always false here
+    
+    item
+    product id, int
+    amount, int
+    shipment id, int
+    */
 
     public void mainCustomerLoop()
     {
@@ -26,13 +42,22 @@ public class CustomerMenu {
                     conn.viewStoreCatalogue();
                     break;
                 case 2:
-                    System.out.println("Not implemented yet!");
+                    addItemToCart();
                     break;
                 case 3:
-                    System.out.println("Not implemented yet!");
+                    if(cartIsCreated)
+                    {
+                        conn.viewCurrentShipment(cartID);
+                    }
+                    else
+                    {
+                        System.out.println("Cart is empty!");
+                    }
                     break;
                 case 4:
                     System.out.println("Not implemented yet!");
+
+                    //showAllOrders();
                     break;
                 case 5:
                     System.out.println("Not implemented yet!");
@@ -55,6 +80,54 @@ public class CustomerMenu {
         System.out.println("3. I want to see my cart");
         System.out.println("4. I want to see my orders");
         System.out.println("5. I want to cancel a order");
+        /* 
+        search by code,name,supplier,price
+        see current discounts
+        
+        */
+    }
+
+    public void addItemToCart()
+    {
+        //write methods in conn
+
+        System.out.println("Enter product name (case sensitive)");
+        String name = input.next();
+        System.out.println("Enter how many you would like");
+        int amount = input.nextInt();
+
+        //check stock
+        if(conn.validateProductStock(name, amount))
+        {
+            //check if order exists
+            if(!cartIsCreated)
+            {
+                cartIsCreated = conn.createShipment(customer);
+            }
+
+            if(cartIsCreated)
+            {
+                int id = conn.findProductID(name);
+
+                //add item to order
+                conn.addItemtoShipment(cartID, id, amount);
+
+                //remove amount from stock
+                conn.removeStock(id, amount);
+
+                //print something
+                System.out.println("Item added to your cart!");
+            }
+        }
+        else
+        {
+            System.out.println("Not enough in stock!");
+        }
+    }
+
+    public void showAllOrders()
+    {
+
     }
 
     public int readMenuChoice() {
