@@ -55,9 +55,8 @@ public class CustomerMenu {
                     }
                     break;
                 case 4:
-                    System.out.println("Not implemented yet!");
 
-                    //showAllOrders();
+                    conn.showAllShipments(customer);
                     break;
                 case 5:
                     System.out.println("Not implemented yet!");
@@ -123,11 +122,6 @@ public class CustomerMenu {
         {
             System.out.println("Not enough in stock!");
         }
-    }
-
-    public void showAllOrders()
-    {
-
     }
 
     public int readMenuChoice() {

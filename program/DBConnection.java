@@ -529,5 +529,27 @@ public class DBConnection {
         return -1;
     }
 
-    
+    public void showAllShipments(Customer customer)
+    {
+        String query = "SELECT * FROM shipment WHERE s_customer = " + customer.userID;
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+            
+
+            while (resultSet.next()) {
+                System.out.println();
+                System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order Confirmed: " + resultSet.getBoolean("s_confirmed"));
+
+                viewCurrentShipment(resultSet.getInt("s_id"));
+
+                
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
