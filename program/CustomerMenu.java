@@ -59,8 +59,14 @@ public class CustomerMenu {
                     conn.showAllShipments(customer);
                     break;
                 case 5:
-                    System.out.println("Not implemented yet!");
-                    break;    
+                    conn.showAllShipments(customer);
+                    System.out.println("Enter which shipment you would like to cancel");
+                    int shipment = input.nextInt();
+                    conn.deleteShipment(shipment);
+                    break; 
+                case 6:
+                    isOn = false;
+                    break;
                 default:
                     System.out.println("Invalid option!");
             }
@@ -79,11 +85,8 @@ public class CustomerMenu {
         System.out.println("3. I want to see my cart");
         System.out.println("4. I want to see my orders");
         System.out.println("5. I want to cancel a order");
-        /* 
-        search by code,name,supplier,price
-        see current discounts
+        System.out.println("6. I want to to go back");
         
-        */
     }
 
     public void addItemToCart()

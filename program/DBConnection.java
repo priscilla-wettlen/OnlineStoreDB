@@ -143,7 +143,6 @@ public class DBConnection {
         }
     }
 
-
     public void viewProductList(){
         String query = "SELECT * FROM product";
 
@@ -544,12 +543,66 @@ public class DBConnection {
 
                 viewCurrentShipment(resultSet.getInt("s_id"));
 
-                
+                System.out.println();
             }
+
+            
 
         } catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public boolean deleteShipment(int shipmentToDelete)
+    {
+        String queryStart = "SELECT s_confirmed FROM shipment where s_id = " + shipmentToDelete;
+        try (PreparedStatement ps = conn.prepareStatement(queryStart);
+            ResultSet resultSet = ps.executeQuery()) {
+            
+            resultSet.next();
+            if( resultSet.getBoolean("s_confirmed"))
+            {
+                return false;
+            }
+
+            conn.setAutoCommit(false);
+
+            String querySelect = "SELECT * FROM shipment_item WHERE si_shipmentid = " + shipmentToDelete;
+            try (PreparedStatement ps2 = conn.prepareStatement(querySelect);
+                ResultSet resultSet2 = ps2.executeQuery()) {
+                
+                
+                while (resultSet2.next()) {
+                    int amount = resultSet2.getInt("si_amount");
+                    int id = resultSet2.getInt("si_product"); 
+                    removeStock(id, amount * -1);
+                    String queryRemoveItem = "DELETE FROM shipment_item WHERE si_shipmentid = " + shipmentToDelete + " AND si_product = " + id;
+                    try(PreparedStatement ps3 = conn.prepareStatement(queryRemoveItem)){
+                        
+                        int rowsAffected = ps3.executeUpdate();
+                        //System.out.println("Inserted " + rowsAffected + " row(s) into supplier successfully.");
+                    }
+            
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error during delete operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        String query = "DELETE FROM shipment WHERE s_id = " + shipmentToDelete;
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+
+            int rowsAffected = ps.executeUpdate();
+            conn.commit();
+            conn.setAutoCommit(true);
+            return true;
+            
+        } catch (SQLException e) {
+            System.out.println("Error during delete operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
     }
 }
