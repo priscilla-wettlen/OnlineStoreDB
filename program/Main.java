@@ -9,8 +9,8 @@ public class Main {
     static Customer currCustomer = new Customer("placeHolder", "placeHolder", -1);
     static CustomerMenu customerMenu = new CustomerMenu(currCustomer, conn);
 
-    //sad@sds.com
-    //asddsds
+    // sad@sds.com
+    // asddsds
 
     //-----MAIN MENU-----//
     public static void PrintLoginMenu(){
