@@ -14,7 +14,7 @@ public class Main {
 
     //-----MAIN MENU-----//
     public static void PrintLoginMenu(){
-        System.out.println("Welcome to the Electronics Store! " +
+        System.out.println("Welcome to the Online Store! " +
                 "What would you like to do?:\n ");
         System.out.println("1. I'm a returning customer and want to login.");
         System.out.println("2. I don't have an account and I want to register.");
@@ -38,7 +38,7 @@ public class Main {
 
             option = input.nextInt();
             //TODO MODIFY TO MAKE IT REUSABLE FOR ALL MENUS
-            if (option >= 0 && option <= 8) {
+            if (option >= 0 && option <= 9) {
                 isValidInput = true;
             } else {
                 System.out.println("WHOOPS! Please choose ONLY a valid number from the options above.");
@@ -108,24 +108,24 @@ public class Main {
                     isOn = true;
                     break;
                 case 4:
-                    boolean validAdminCredentials = false;
-
-                    while (!validAdminCredentials) {
-                        System.out.println("Enter your admin email address: ");
-                        String adminEmail = input.next();
-
-                        System.out.println("Enter your password: ");
-                        String adminPassword = input.next();
-
-                        if (conn.validateAdmin(adminEmail, adminPassword)) {
-                            System.out.println("Login successful. Accessing admin actions...");
-                            validAdminCredentials = true;
-                            adminActionsLoop();
-                            isOn = false;
-                        } else {
-                            System.out.println("Invalid credentials. Please try again.");
-                        }
-                    }
+//                    boolean validAdminCredentials = false;
+//
+//                    while (!validAdminCredentials) {
+//                        System.out.println("Enter your admin email address: ");
+//                        String adminEmail = input.next();
+//
+//                        System.out.println("Enter your password: ");
+//                        String adminPassword = input.next();
+//
+//                        if (conn.validateAdmin(adminEmail, adminPassword)) {
+//                            System.out.println("Login successful. Accessing admin actions...");
+//                            validAdminCredentials = true;
+//                            adminActionsLoop();
+//                            isOn = false;
+//                        } else {
+//                            System.out.println("Invalid credentials. Please try again.");
+//                        }
+//                    }
                     adminActionsLoop();
                     break;
                 case 5:
@@ -151,7 +151,9 @@ public class Main {
         System.out.println("5. Delete a product");
         System.out.println("6. Add a new discount");
         System.out.println("7. Create a new discount category");
-        System.out.println("8. Exit admin menu");
+        System.out.println("8. View orders waiting to be confirmed");
+        System.out.println("9. Confirm an order");
+        System.out.println("0. Exit admin menu");
     }
 
     public static void adminActionsLoop(){
@@ -258,6 +260,18 @@ public class Main {
                     String discountCode = input.next();
                     System.out.println("Give a name to the category");
                 case 8:
+                    conn.viewOrdersToBeConfirmed();
+                    isOnActive = true;
+                    break;
+                case 9:
+                    conn.viewOrdersToBeConfirmed();
+                    System.out.println();
+                    System.out.println("Enter the id of the order you'd like to confirm: ");
+                    int shipmentId = input.nextInt();
+                    conn.confirmShipment(shipmentId);
+                    isOnActive = true;
+                    break;
+                case 0:
                     System.out.println("You have exited the admin menu. You will now be redirected to main menu.");
                     System.out.println();
                     mainMenuLoop();
