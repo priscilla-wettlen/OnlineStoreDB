@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
     private static final String USER = "aj6817";
-    private static final String PASSWORD = "ywv0moz1";
+    private static final String PASSWORD = System.getenv("CRED");
     private Connection conn;
 
     public DBConnection() {
