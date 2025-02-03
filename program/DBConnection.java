@@ -507,7 +507,7 @@ public class DBConnection {
         return false;
     }
 
-    public void addItemtoShipment(int cartID, int id, int amount)
+    public void addItemToShipment(int cartID, int id, int amount)
     {
         String query = "INSERT INTO shipment_item OVERRIDING SYSTEM VALUE VALUES (" + id + ", " + amount + ", " + cartID + ")";
 
@@ -552,31 +552,35 @@ public class DBConnection {
         return -1;
     }
 
-    public void showAllShipments(Customer customer)
-    {
-        String query = "SELECT * FROM shipment WHERE s_customer = " + customer.userID;
+    public void showAllShipments(Customer customer) {
+        String query = "SELECT * FROM shipment WHERE s_customer = ?";
 
-        try (PreparedStatement ps = conn.prepareStatement(query);
-             ResultSet resultSet = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, customer.userID);
 
-            
+            try (ResultSet resultSet = ps.executeQuery()) {
 
-            while (resultSet.next()) {
-                System.out.println();
-                System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order Confirmed: " + resultSet.getBoolean("s_confirmed"));
+                if (!resultSet.isBeforeFirst()) {
+                    System.out.println("No previous shipments found.");
+                    return;
+                }
 
-                viewCurrentShipment(resultSet.getInt("s_id"));
+                while (resultSet.next()) {
+                    System.out.println();
+                    System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order Confirmed: " + resultSet.getBoolean("s_confirmed"));
 
-                System.out.println();
+                    viewCurrentShipment(resultSet.getInt("s_id"));
+
+                    System.out.println();
+                }
+
             }
-
-            
-
         } catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     public boolean deleteShipment(int shipmentToDelete)
     {

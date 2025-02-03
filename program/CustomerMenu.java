@@ -42,6 +42,7 @@ public class CustomerMenu {
                     conn.viewStoreCatalogue();
                     break;
                 case 2:
+                    conn.viewStoreCatalogue();
                     addItemToCart();
                     break;
                 case 3:
@@ -55,7 +56,6 @@ public class CustomerMenu {
                     }
                     break;
                 case 4:
-
                     conn.showAllShipments(customer);
                     break;
                 case 5:
@@ -112,7 +112,7 @@ public class CustomerMenu {
                 int id = conn.findProductID(name);
 
                 //add item to order
-                conn.addItemtoShipment(cartID, id, amount);
+                conn.addItemToShipment(cartID, id, amount);
 
                 //remove amount from stock
                 conn.removeStock(id, amount);
