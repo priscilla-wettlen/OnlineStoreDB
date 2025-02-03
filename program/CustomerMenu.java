@@ -1,6 +1,8 @@
 package program;
 import java.util.Scanner;
 
+import static program.Main.mainMenuLoop;
+
 public class CustomerMenu {
     static Scanner input = new Scanner(System.in);
     Customer customer;
@@ -56,15 +58,20 @@ public class CustomerMenu {
                     }
                     break;
                 case 4:
-                    conn.showAllShipments(customer);
                     break;
                 case 5:
+                    conn.showAllShipments(customer);
+                    break;
+                case 6:
                     conn.showAllShipments(customer);
                     System.out.println("Enter which shipment you would like to cancel");
                     int shipment = input.nextInt();
                     conn.deleteShipment(shipment);
                     break; 
-                case 6:
+                case 7:
+                    System.out.println("You have exited the customer menu. You will now be redirected to main menu.");
+                    System.out.println();
+                    mainMenuLoop();
                     isOn = false;
                     break;
                 default:
@@ -83,9 +90,10 @@ public class CustomerMenu {
         System.out.println("1. I want to browse your catalogue.");
         System.out.println("2. I want to add a product to my cart");
         System.out.println("3. I want to see my cart");
-        System.out.println("4. I want to see my orders");
-        System.out.println("5. I want to cancel a order");
-        System.out.println("6. I want to to go back");
+        System.out.println("4. I want to confirm my order");
+        System.out.println("5. I want to see my orders");
+        System.out.println("6. I want to cancel a order");
+        System.out.println("7. I want to to go back");
         
     }
 
@@ -142,7 +150,7 @@ public class CustomerMenu {
 
             option = input.nextInt();
 
-            if (option >= 0 && option <= 8) {
+            if (option >= 0 && option <= 9) {
                 isValidInput = true;
             } else {
                 System.out.println("WHOOPS! Please choose ONLY a valid number from the options above.");

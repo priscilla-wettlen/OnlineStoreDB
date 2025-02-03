@@ -633,4 +633,47 @@ public class DBConnection {
         }
         return false;
     }
+
+    public void viewOrdersToBeConfirmed() {
+        String query = "SELECT * FROM shipment WHERE s_confirmed = false";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+                if (!resultSet.isBeforeFirst()) {
+                    System.out.println("No orders needing confirmation found.");
+                    return;
+                }
+
+                while (resultSet.next()) {
+                    System.out.println();
+                    System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order Confirmed: " + resultSet.getBoolean("s_confirmed"));
+                    System.out.println();
+                }
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void confirmShipment(int shipmentID) {
+        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setInt(1, shipmentID);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
+            } else {
+                System.out.println("No shipment found with ID " + shipmentID + ".");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating shipment confirmation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }
