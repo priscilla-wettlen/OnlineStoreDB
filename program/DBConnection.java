@@ -144,6 +144,36 @@ public class DBConnection {
         }
     }
 
+    public void updateProductAmount(int productCode, int newAmount) {
+        String checkProductQuery = "SELECT 1 FROM product WHERE p_code = ?";
+        String updateAmountQuery = "UPDATE product SET p_amount = ? WHERE p_code = ?";
+
+        try (PreparedStatement checkProd = conn.prepareStatement(checkProductQuery)) {
+            checkProd.setInt(1, productCode);
+            try (ResultSet rs = checkProd.executeQuery()) {
+                if (rs.next()) {
+                    try (PreparedStatement ps = conn.prepareStatement(updateAmountQuery)) {
+                        ps.setInt(1, newAmount);
+                        ps.setInt(2, productCode);
+
+                        int rowsAffected = ps.executeUpdate();
+                        if (rowsAffected > 0) {
+                            System.out.println("Updated product amount successfully. New amount: " + newAmount);
+                        } else {
+                            System.out.println("Error: Could not update product amount.");
+                        }
+                    }
+                } else {
+                    System.out.println("Error: Product with code " + productCode + " does not exist.");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error during operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
     public void viewProductList(){
         String query = "SELECT * FROM product";
 
@@ -692,57 +722,79 @@ public class DBConnection {
     }
 
 
-    public boolean deleteShipment(int shipmentToDelete)
-    {
-        String queryStart = "SELECT s_confirmed FROM shipment where s_id = " + shipmentToDelete;
-        try (PreparedStatement ps = conn.prepareStatement(queryStart);
-            ResultSet resultSet = ps.executeQuery()) {
-            
-            resultSet.next();
-            if( resultSet.getBoolean("s_confirmed"))
-            {
-                return false;
-            }
+    public boolean deleteShipment(int shipmentToDelete) {
+        String checkShipmentQuery = "SELECT s_confirmed FROM shipment WHERE s_id = ?";
+        String selectItemsQuery = "SELECT si_product, si_amount FROM shipment_item WHERE si_shipmentid = ?";
+        String deleteItemQuery = "DELETE FROM shipment_item WHERE si_shipmentid = ? AND si_product = ?";
+        String deleteShipmentQuery = "DELETE FROM shipment WHERE s_id = ?";
 
-            conn.setAutoCommit(false);
-
-            String querySelect = "SELECT * FROM shipment_item WHERE si_shipmentid = " + shipmentToDelete;
-            try (PreparedStatement ps2 = conn.prepareStatement(querySelect);
-                ResultSet resultSet2 = ps2.executeQuery()) {
-                
-                
-                while (resultSet2.next()) {
-                    int amount = resultSet2.getInt("si_amount");
-                    int id = resultSet2.getInt("si_product"); 
-                    removeStock(id, amount * -1);
-                    String queryRemoveItem = "DELETE FROM shipment_item WHERE si_shipmentid = " + shipmentToDelete + " AND si_product = " + id;
-                    try(PreparedStatement ps3 = conn.prepareStatement(queryRemoveItem)){
-                        
-                        int rowsAffected = ps3.executeUpdate();
-                        //System.out.println("Inserted " + rowsAffected + " row(s) into supplier successfully.");
-                    }
-            
+        try (PreparedStatement checkShipment = conn.prepareStatement(checkShipmentQuery)) {
+            checkShipment.setInt(1, shipmentToDelete);
+            try (ResultSet rs = checkShipment.executeQuery()) {
+                if (!rs.next()) {
+                    System.out.println("Error: Shipment not found.");
+                    return false;
+                }
+                if (rs.getBoolean("s_confirmed")) {
+                    System.out.println("ERROR: Cannot delete order because it has already been confirmed by store admin.");
+                    return false;
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error during delete operation: " + e.getMessage());
+            System.out.println("Error checking shipment status: " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
 
-        String query = "DELETE FROM shipment WHERE s_id = " + shipmentToDelete;
-        try (PreparedStatement ps = conn.prepareStatement(query)) {
+        try {
+            conn.setAutoCommit(false);
+            try (PreparedStatement selectItems = conn.prepareStatement(selectItemsQuery)) {
+                selectItems.setInt(1, shipmentToDelete);
+                try (ResultSet rs2 = selectItems.executeQuery()) {
+                    while (rs2.next()) {
+                        int productId = rs2.getInt("si_product");
+                        int amount = rs2.getInt("si_amount");
 
-            int rowsAffected = ps.executeUpdate();
-            conn.commit();
-            conn.setAutoCommit(true);
-            return true;
-            
+                        removeStock(productId, -amount);
+                        try (PreparedStatement deleteItem = conn.prepareStatement(deleteItemQuery)) {
+                            deleteItem.setInt(1, shipmentToDelete);
+                            deleteItem.setInt(2, productId);
+                            deleteItem.executeUpdate();
+                        }
+                    }
+                }
+            }
+
+            try (PreparedStatement deleteShipment = conn.prepareStatement(deleteShipmentQuery)) {
+                deleteShipment.setInt(1, shipmentToDelete);
+                int rowsAffected = deleteShipment.executeUpdate();
+                if (rowsAffected > 0) {
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                    System.out.println("Shipment deleted successfully.");
+                    return true;
+                }
+            }
+
+            conn.rollback();
         } catch (SQLException e) {
             System.out.println("Error during delete operation: " + e.getMessage());
-            e.printStackTrace();
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
         return false;
     }
+
+
 
     public void viewOrdersToBeConfirmed() {
         String query = "SELECT * FROM shipment WHERE s_confirmed = false";

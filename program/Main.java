@@ -146,13 +146,12 @@ public class Main {
                 "What would you like to do?:\n ");
         System.out.println("1. Add a new supplier");
         System.out.println("2. View list of suppliers");
-        System.out.println("3. Add a new product");
+        System.out.println("3. Modify stock");
         System.out.println("4. Find a product");
-        System.out.println("5. Delete a product");
-        System.out.println("6. Add a new discount");
-        System.out.println("7. Create a new discount category");
-        System.out.println("8. View orders waiting to be confirmed");
-        System.out.println("9. Confirm an order");
+        System.out.println("5. Add a new discount");
+        System.out.println("6. Create a new discount category");
+        System.out.println("7. View orders waiting to be confirmed");
+        System.out.println("8. Confirm an order");
         System.out.println("0. Exit admin menu");
     }
 
@@ -179,16 +178,50 @@ public class Main {
                     isOnActive = true;
                     break;
                 case 3:
-                    System.out.println("Enter product name:");
-                    String pName = input.next();
-                    System.out.println("Enter amount:");
-                    int pAmount = input.nextInt();
-                    System.out.println("Enter price:");
-                    double pPrice = input.nextDouble();
-                    System.out.println("Enter supplier code:");
-                    int pCode = input.nextInt();
-                    conn.addNewProduct(pName,pAmount,pPrice, pCode);
-                    isOnActive = true;
+                    conn.viewProductList();
+                    System.out.println();
+                    System.out.println("Select an action: ");
+                    System.out.println("1. Add a new product");
+                    System.out.println("2. Edit the quantity of a product");
+                    System.out.println("3. Delete a product");
+                    System.out.println("4. Go back to admin menu");
+                    System.out.println();
+
+                    int val = readMenuChoice();
+                    switch (val) {
+                        case 1:
+                            System.out.println("Enter product name:");
+                            String pName = input.next();
+                            System.out.println("Enter amount:");
+                            int pAmount = input.nextInt();
+                            System.out.println("Enter price:");
+                            double pPrice = input.nextDouble();
+                            System.out.println("Enter supplier code:");
+                            int pCode = input.nextInt();
+                            conn.addNewProduct(pName,pAmount,pPrice, pCode);
+                            adminActionsLoop();
+                            break;
+                        case 2:
+                            conn.viewProductList();
+                            System.out.println("Enter product code:");
+                            int prodCode = input.nextInt();
+                            System.out.println("Enter new quantity:");
+                            int newQuantity = input.nextInt();
+                            conn.updateProductAmount(prodCode,newQuantity);
+                            adminActionsLoop();
+                            break;
+                        case 3:
+                            conn.viewProductList();
+                            System.out.println();
+                            System.out.println("Enter the code of the product you'd like to delete: ");
+                            int productToDelete = input.nextInt();
+                            conn.deleteProduct(productToDelete);
+                            isOnActive = true;
+                            break;
+                        case 4:
+                            adminActionsLoop();
+                            break;
+                    }
                     break;
                 case 4:
                     conn.viewProductList();
@@ -226,14 +259,6 @@ public class Main {
                     }
                     break;
                 case 5:
-                    conn.viewProductList();
-                    System.out.println();
-                    System.out.println("Enter the code of the product you'd like to delete: ");
-                    int productToDelete = input.nextInt();
-                    conn.deleteProduct(productToDelete);
-                    isOnActive = true;
-                    break;
-                case 6:
                     System.out.println("Enter a 6-character discount code. This is the code that shoppers will use: ");
                     String dCode = input.next();
                     System.out.println("Enter the discount amount as a decimal. Ex. 10% = 0,10: ");
@@ -255,15 +280,15 @@ public class Main {
                     conn.addNewDiscount(dCode, amount, d_category, startDate,endDate, productCode);
                     isOnActive = true;
                     break;
-                case 7:
+                case 6:
                     System.out.println("Enter discount code:");
                     String discountCode = input.next();
                     System.out.println("Give a name to the category");
-                case 8:
+                case 7:
                     conn.viewOrdersToBeConfirmed();
                     isOnActive = true;
                     break;
-                case 9:
+                case 8:
                     conn.viewOrdersToBeConfirmed();
                     System.out.println();
                     System.out.println("Enter the id of the order you'd like to confirm: ");
