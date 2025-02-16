@@ -41,7 +41,52 @@ public class CustomerMenu {
 
             switch(option){
                 case 1:
-                    conn.viewStoreCatalogue();
+                    System.out.println("Find: ");
+                    System.out.println("1. All products");
+                    System.out.println("2. Only discounted products");
+                    System.out.println("3. Product by name");
+                    System.out.println("4. Product by code");
+                    System.out.println("5. Product by price");
+                    System.out.println("6. Product by supplier");
+                    System.out.println("7. Back to customer menu");
+                    int choice = readMenuChoice();
+                    switch (choice) {
+                        case 1:
+                            conn.viewStoreCatalogue();
+                            mainCustomerLoop();
+                            break;
+                        case 2:
+                            conn.showDiscountedProducts();
+                            mainCustomerLoop();
+                            break;
+                        case 3:
+                            System.out.println("Enter product name:");
+                            String searchProductName = input.next();
+                            conn.findProductByName(searchProductName);
+                            mainCustomerLoop();
+                            break;
+                        case 4:
+                            System.out.println("Enter product code:");
+                            int searchProductCode = input.nextInt();
+                            conn.findProductByCode(searchProductCode);
+                            mainCustomerLoop();
+                            break;
+                        case 5:
+                            System.out.println("Enter the price in this format: 0,00:");
+                            double searchPrice = input.nextDouble();
+                            conn.findProductByPrice(searchPrice);
+                            mainCustomerLoop();
+                            break;
+                        case 6:
+                            System.out.println("Enter supplier's code:");
+                            int searchSupplierCode = input.nextInt();
+                            conn.findProductBySupplier(searchSupplierCode);
+                            mainCustomerLoop();
+                            break;
+                        case 7:
+                            mainCustomerLoop();
+                            break;
+                    }
                     break;
                 case 2:
                     conn.viewStoreCatalogue();
@@ -58,6 +103,7 @@ public class CustomerMenu {
                     }
                     break;
                 case 4:
+
                     break;
                 case 5:
                     conn.showAllShipments(customer);
@@ -90,7 +136,7 @@ public class CustomerMenu {
         System.out.println("1. I want to browse your catalogue.");
         System.out.println("2. I want to add a product to my cart");
         System.out.println("3. I want to see my cart");
-        System.out.println("4. I want to confirm my order");
+        System.out.println("4. I want to place an order");
         System.out.println("5. I want to see my orders");
         System.out.println("6. I want to cancel a order");
         System.out.println("7. I want to to go back");
