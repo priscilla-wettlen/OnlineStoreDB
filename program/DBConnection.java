@@ -3,6 +3,7 @@ package program;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
@@ -174,6 +175,14 @@ public class DBConnection {
         try (PreparedStatement ps = conn.prepareStatement(pCodeQuery)) {
             ps.setInt(1, code);
             try (ResultSet rs = ps.executeQuery()) {
+
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("No product found with code: " + code);
+                    System.out.println();
+                    return;
+                }
+
+
                 System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
                 System.out.println("-------------------------------------------------------------"
                         + "--------------------------------------------------------");
@@ -204,6 +213,13 @@ public class DBConnection {
         try (PreparedStatement ps = conn.prepareStatement(pNameQuery)) {
             ps.setString(1, productName);
             try (ResultSet rs = ps.executeQuery()) {
+
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("No product found with name: " + productName);
+                    System.out.println();
+                    return;
+                }
+
                 System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
                 System.out.println("-------------------------------------------------------------"
                         + "--------------------------------------------------------");
@@ -227,6 +243,41 @@ public class DBConnection {
         }
     }
 
+    public void findProductByPrice(double productPrice) {
+        String pNameQuery = "SELECT * FROM product WHERE p_price = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(pNameQuery)) {
+            ps.setDouble(1, productPrice);
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("No product found with price: " + productPrice);
+                    System.out.println();
+                    return;
+                }
+
+
+                System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
+                System.out.println("-------------------------------------------------------------"
+                        + "--------------------------------------------------------");
+
+                while (rs.next()) {
+                    int code = rs.getInt("p_code");
+                    String name = rs.getString("p_name");
+                    int amount = rs.getInt("p_amount");
+                    productPrice = rs.getDouble("p_price");
+                    int supplier = rs.getInt("p_supplier");
+
+                    System.out.printf("%-10d %-20s %-20d %-10.2f %-20d%n", code, name, amount, productPrice, supplier);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error during operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
     public void findProductBySupplier(int supplierCode){
         String getSupplierName = "SELECT pr.p_code, pr.p_name, pr.p_amount, pr.p_price, sup.s_name " +
                 "FROM product pr " +
@@ -236,6 +287,13 @@ public class DBConnection {
         try (PreparedStatement ps = conn.prepareStatement(getSupplierName)) {
             ps.setInt(1, supplierCode);
             try (ResultSet rs = ps.executeQuery()) {
+
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("No product found with supplier code: " + supplierCode);
+                    System.out.println();
+                    return;
+                }
+
                 System.out.printf("%-10s %-20s %-20s %-10s %-20s%n", "Code", "Product", "Available Units", "Price", "Supplier");
                 System.out.println("-------------------------------------------------------------"
                         + "--------------------------------------------------------");
@@ -279,31 +337,51 @@ public class DBConnection {
         }
     }
 
-    public void addNewDiscount(String discountCode, double discountAmount,  int category_id, String startDate, String endDate, int productCode) {
+    public void addNewDiscount(String discountCode, double discountAmount, int category_id, String startDate, String endDate, int productCode) {
         String query = "INSERT INTO discount (d_discount_code, d_amount, d_category_id, d_date_start, d_date_end, d_product_code) VALUES (?, ?, ?, ?, ?, ?)";
-        String checkProductQuery = "SELECT 1 FROM product WHERE p_code = ?";
-        //String categoryQuery = "SELECT d.d_discount_code" + "FROM discount d" + "JOIN discount_category dic ON d.d_discount_code = dic.dc_code" + "WHERE dic.dc_category_name = discountCategory";
+        String checkProductQuery = "SELECT p_price FROM product WHERE p_code = ?";
+        String updatePriceQuery = "UPDATE product SET p_price = ? WHERE p_code = ?";
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        try (PreparedStatement checkProd = conn.prepareStatement(checkProductQuery)) {
-            checkProd.setInt(1, productCode);
-            try (ResultSet rs = checkProd.executeQuery()) {
-                if (rs.next()) {
-                    try (PreparedStatement ps = conn.prepareStatement(query)) {
-                        ps.setString(1, discountCode);
-                        ps.setDouble(2, discountAmount);
-                        ps.setInt(3, category_id);
-                        ps.setDate(4, new Date(sdf.parse(startDate).getTime()));
-                        ps.setDate(5, new Date(sdf.parse(endDate).getTime()));
-                        ps.setInt(6, productCode);
+        try {
+            Date start = sdf.parse(startDate);
+            Date end = sdf.parse(endDate);
+            Date today = new Date();
 
-                        int rowsAffected = ps.executeUpdate();
-                        System.out.println("Inserted " + rowsAffected + " row(s) into discount successfully.");
+            try (PreparedStatement checkProd = conn.prepareStatement(checkProductQuery)) {
+                checkProd.setInt(1, productCode);
+                try (ResultSet rs = checkProd.executeQuery()) {
+                    if (rs.next()) {
+                        double currentPrice = rs.getDouble("p_price");
 
+                        try (PreparedStatement ps = conn.prepareStatement(query)) {
+                            ps.setString(1, discountCode);
+                            ps.setDouble(2, discountAmount);
+                            ps.setInt(3, category_id);
+                            ps.setDate(4, new java.sql.Date(start.getTime()));
+                            ps.setDate(5, new java.sql.Date(end.getTime()));
+                            ps.setInt(6, productCode);
+
+                            int rowsAffected = ps.executeUpdate();
+                            System.out.println("Inserted " + rowsAffected + " row(s) into discount successfully.");
+                        }
+
+                        if (!today.before(start) && !today.after(end)) {
+                            double newPrice = currentPrice * (1 - (discountAmount / 100));
+
+                            try (PreparedStatement updatePrice = conn.prepareStatement(updatePriceQuery)) {
+                                updatePrice.setDouble(1, newPrice);
+                                updatePrice.setInt(2, productCode);
+                                updatePrice.executeUpdate();
+                                System.out.println("Updated product price for product code " + productCode + " to " + newPrice);
+                            }
+                        } else {
+                            System.out.println("Discount for product code " + productCode + " is not yet active.");
+                        }
+                    } else {
+                        System.out.println("Product with code " + productCode + " does not exist.");
                     }
-                } else {
-                    System.out.println("Product with code " + productCode + " does not exist.");
                 }
             }
         } catch (ParseException e) {
@@ -406,6 +484,38 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
+
+    public void showDiscountedProducts() {
+        String query = "SELECT p.p_code, p.p_name, p.p_price, d.d_discount_code, d.d_amount, d.d_date_start, d.d_date_end " +
+                "FROM product p " +
+                "JOIN discount d ON p.p_code = d.d_product_code " +
+                "WHERE CURRENT_DATE BETWEEN d.d_date_start AND d.d_date_end";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+
+            System.out.printf("%-10s %-20s %-10s %-15s %-10s %-12s %-12s%n",
+                    "Code", "Name", "Price", "Discount Code", "Amount", "Start Date", "End Date");
+            System.out.println("---------------------------------------------------------------------------------------");
+
+            while (rs.next()) {
+                int code = rs.getInt("p_code");
+                String name = rs.getString("p_name");
+                double price = rs.getDouble("p_price");
+                String discountCode = rs.getString("d_discount_code");
+                double discountAmount = rs.getDouble("d_amount");
+                Date startDate = rs.getDate("d_date_start");
+                Date endDate = rs.getDate("d_date_end");
+
+                System.out.printf("%-10d %-20s %-10.2f %-15s %-10.2f %-12s %-12s%n",
+                        code, name, price, discountCode, discountAmount, startDate, endDate);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void viewCurrentShipment(int currID){
         String query = "SELECT p_name, si_amount, p_price FROM shipment_item INNER JOIN product ON product.p_code = shipment_item.si_product WHERE si_shipmentid = " + currID;
@@ -513,7 +623,7 @@ public class DBConnection {
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
             int rowsAffected = preparedStatement.executeUpdate();
-            //System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
+            System.out.println("Item added successfully to shipment.");
 
         } catch (SQLException e) {
             System.out.println("Error during insert operation: " + e.getMessage());
