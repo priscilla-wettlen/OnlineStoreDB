@@ -152,6 +152,7 @@ public class Main {
         System.out.println("6. Create a new discount category");
         System.out.println("7. View orders waiting to be confirmed");
         System.out.println("8. Confirm an order");
+        System.out.println("9. Show best selling products per month");
         System.out.println("0. Exit admin menu");
     }
 
@@ -293,7 +294,11 @@ public class Main {
                     System.out.println();
                     System.out.println("Enter the id of the order you'd like to confirm: ");
                     int shipmentId = input.nextInt();
-                    conn.confirmShipment(shipmentId);
+                    conn.confirmOrder(shipmentId);
+                    isOnActive = true;
+                    break;
+                case 9:
+                    conn.getBestSellers();
                     isOnActive = true;
                     break;
                 case 0:

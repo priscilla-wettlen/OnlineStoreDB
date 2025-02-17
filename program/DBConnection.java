@@ -442,6 +442,84 @@ public class DBConnection {
         }
     }
 
+    public void getBestSellers() {
+        String query = "SELECT p.p_name AS product_name, " +
+                "SUM(s.quantity_sold) AS total_sold, " +
+                "TO_CHAR(s.sale_date, 'YYYY-MM') AS sale_month " +
+                "FROM sales s " +
+                "JOIN product p ON s.product_id = p.p_code " +
+                "GROUP BY sale_month, product_name " +
+                "ORDER BY sale_month DESC, total_sold DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+
+            System.out.printf("%-15s %-10s %-10s%n", "Month", "Product", "Sold");
+            System.out.println("-------------------------------------");
+
+            boolean hasResults = false;
+            while (rs.next()) {
+                hasResults = true;
+                String month = rs.getString("sale_month");
+                String productName = rs.getString("product_name");
+                int totalSold = rs.getInt("total_sold");
+
+                System.out.printf("%-15s %-10s %-10d%n", month, productName, totalSold);
+            }
+
+            if (!hasResults) {
+                System.out.println("No sales data available.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving best-selling products: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void viewOrdersToBeConfirmed() {
+        String query = "SELECT * FROM shipment WHERE s_confirmed = false";
+
+        try (PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+
+            if (!resultSet.isBeforeFirst()) {
+                System.out.println("No orders needing confirmation found.");
+                return;
+            }
+
+            while (resultSet.next()) {
+                System.out.println();
+                System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order Confirmed: " + resultSet.getBoolean("s_confirmed"));
+                System.out.println();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error during select operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void confirmOrder(int shipmentID) {
+        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setInt(1, shipmentID);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
+            } else {
+                System.out.println("No shipment found with ID " + shipmentID + ".");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating shipment confirmation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
     //-----CUSTOMER ACTIONS-----//
     public boolean validateCustomer(String email, String password, Customer customer) {
         String query = "SELECT * FROM customer WHERE c_email = ? AND c_password = ?";
@@ -630,22 +708,25 @@ public class DBConnection {
         return false;
     }
 
-    public boolean createShipment(Customer customer)
-    {
-        String query = "INSERT INTO shipment (s_customer, s_confirmed) VALUES (" + customer.getUserID() + ", false)";
+
+    public int createShipment(Customer customer) {
+        String query = "INSERT INTO shipment (s_customer, s_confirmed) VALUES (?, FALSE) RETURNING s_id";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            int rowsAffected = preparedStatement.executeUpdate();
-            return true;
-            //System.out.println("Inserted " + rowsAffected + " row(s) into customer successfully.");
+            preparedStatement.setInt(1, customer.getUserID());
 
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("s_id");  // Return the new shipment ID
+            }
         } catch (SQLException e) {
             System.out.println("Error during insert operation: " + e.getMessage());
             e.printStackTrace();
         }
 
-        return false;
+        return -1;
     }
+
 
     public void addItemToShipment(int cartID, int id, int amount)
     {
@@ -657,6 +738,28 @@ public class DBConnection {
 
         } catch (SQLException e) {
             System.out.println("Error during insert operation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    public void confirmCart(int shipmentID) {
+        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setInt(1, shipmentID);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
+            } else {
+                System.out.println("No shipment found with ID " + shipmentID + ".");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating shipment confirmation: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -794,48 +897,5 @@ public class DBConnection {
         return false;
     }
 
-
-
-    public void viewOrdersToBeConfirmed() {
-        String query = "SELECT * FROM shipment WHERE s_confirmed = false";
-
-        try (PreparedStatement ps = conn.prepareStatement(query);
-             ResultSet resultSet = ps.executeQuery()) {
-
-                if (!resultSet.isBeforeFirst()) {
-                    System.out.println("No orders needing confirmation found.");
-                    return;
-                }
-
-                while (resultSet.next()) {
-                    System.out.println();
-                    System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order Confirmed: " + resultSet.getBoolean("s_confirmed"));
-                    System.out.println();
-                }
-
-        } catch (SQLException e) {
-            System.out.println("Error during select operation: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    public void confirmShipment(int shipmentID) {
-        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
-
-        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            preparedStatement.setInt(1, shipmentID);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
-            } else {
-                System.out.println("No shipment found with ID " + shipmentID + ".");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error updating shipment confirmation: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
 }
