@@ -470,7 +470,8 @@ public class DBConnection {
                 "FROM sales s " +
                 "JOIN product p ON s.product_id = p.p_code " +
                 "GROUP BY sale_month, product_name " +
-                "ORDER BY sale_month DESC, total_sold DESC";
+                "ORDER BY sale_month DESC, total_sold DESC " + // Added space here
+                "LIMIT 5";
 
         try (PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
