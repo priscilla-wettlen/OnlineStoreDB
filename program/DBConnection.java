@@ -3,7 +3,9 @@ package program;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
@@ -442,6 +444,25 @@ public class DBConnection {
         }
     }
 
+
+    public void insertSale(int shipmentID, int productID, int quantity) {
+        String query = "INSERT INTO sales (shipment_id, product_id, quantity_sold, sale_date) VALUES (?, ?, ?, CURRENT_DATE)";
+
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, shipmentID);
+            ps.setInt(2, productID);
+            ps.setInt(3, quantity);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error inserting sale: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
+    //TODO check that the sale is recorded. Implement a checkout method
+
     public void getBestSellers() {
         String query = "SELECT p.p_name AS product_name, " +
                 "SUM(s.quantity_sold) AS total_sold, " +
@@ -500,24 +521,66 @@ public class DBConnection {
         }
     }
 
+//    public void confirmOrder(int shipmentID) {
+//        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
+//
+//        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+//            preparedStatement.setInt(1, shipmentID);
+//
+//            int rowsAffected = preparedStatement.executeUpdate();
+//
+//            if (rowsAffected > 0) {
+//                System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
+//            } else {
+//                System.out.println("No shipment found with ID " + shipmentID + ".");
+//            }
+//        } catch (SQLException e) {
+//            System.out.println("Error updating shipment confirmation: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
+
     public void confirmOrder(int shipmentID) {
-        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
+        String updateQuery = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
+        String selectQuery = "SELECT si_product, si_amount FROM shipment_item WHERE si_shipmentid = ?";
 
-        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            preparedStatement.setInt(1, shipmentID);
+        try (PreparedStatement psUpdate = conn.prepareStatement(updateQuery);
+             PreparedStatement psSelect = conn.prepareStatement(selectQuery)) {
 
-            int rowsAffected = preparedStatement.executeUpdate();
+            // Retrieve products from shipment
+            psSelect.setInt(1, shipmentID);
+            ResultSet rs = psSelect.executeQuery();
+
+            List<int[]> items = new ArrayList<>(); // Store (product_id, quantity)
+
+            while (rs.next()) {
+                int productID = rs.getInt("si_product");
+                int amount = rs.getInt("si_amount");
+                items.add(new int[]{productID, amount});
+            }
+
+            // Confirm shipment
+            psUpdate.setInt(1, shipmentID);
+            int rowsAffected = psUpdate.executeUpdate();
 
             if (rowsAffected > 0) {
                 System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
+
+                // Insert sales records with shipment_id
+                for (int[] item : items) {
+                    insertSale(shipmentID, item[0], item[1]); // Include shipment_id
+                }
+                System.out.println("Sales recorded for confirmed order.");
             } else {
                 System.out.println("No shipment found with ID " + shipmentID + ".");
             }
+
         } catch (SQLException e) {
-            System.out.println("Error updating shipment confirmation: " + e.getMessage());
+            System.out.println("Error confirming shipment and inserting sales: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
 
     //-----CUSTOMER ACTIONS-----//
@@ -667,17 +730,6 @@ public class DBConnection {
             temp = resultSet.getInt("max");
             temp++;
 
-            //System.out.println(temp);
-            /* 
-            while (resultSet.next()) {
-                int test = resultSet.getInt("s_id");
-                if(test >= temp)
-                {
-                    temp = test;
-                    temp++;
-                }
-            }
-            */
 
         } catch (SQLException e) {
             System.out.println("Error during select operation: " + e.getMessage());
@@ -744,26 +796,6 @@ public class DBConnection {
 
 
 
-
-    public void confirmCart(int shipmentID) {
-        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
-
-        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            preparedStatement.setInt(1, shipmentID);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
-            } else {
-                System.out.println("No shipment found with ID " + shipmentID + ".");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error updating shipment confirmation: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
     public void removeStock(int id, int amount)
     {
         String query = "UPDATE product SET p_amount = p_amount - " + amount + " WHERE p_code = " + id;
@@ -810,7 +842,7 @@ public class DBConnection {
 
                 while (resultSet.next()) {
                     System.out.println();
-                    System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order Confirmed: " + resultSet.getBoolean("s_confirmed"));
+                    System.out.println("Order ID: " + resultSet.getInt("s_id") + " Order confirmed by store admin: " + resultSet.getBoolean("s_confirmed"));
 
                     viewCurrentShipment(resultSet.getInt("s_id"));
 

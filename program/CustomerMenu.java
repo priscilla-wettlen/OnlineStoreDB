@@ -17,17 +17,6 @@ public class CustomerMenu {
         cartID = conn.nextShipmentID();
     }
 
-    /*
-    shipment
-    customer id, int
-    shipment id, int
-    confirmed, bool <-- always false here
-    
-    item
-    product id, int
-    amount, int
-    shipment id, int
-    */
 
     public void mainCustomerLoop()
     {
@@ -120,7 +109,7 @@ public class CustomerMenu {
                     break;
                 case 6:
                     conn.showAllShipments(customer);
-                    System.out.println("Enter which shipment you would like to cancel");
+                    System.out.println("Enter the number of the shipment you'd like to cancel");
                     int shipment = input.nextInt();
                     conn.deleteShipment(shipment);
                     break; 
@@ -144,7 +133,7 @@ public class CustomerMenu {
     public void printCustomerMenu(){
         System.out.println("What would you like to do?:\n ");
         System.out.println("1. I want to browse your catalogue.");
-        System.out.println("2. I want to add a product to my cart");
+        System.out.println("2. I want to create a new order");
         System.out.println("3. I want to see my cart");
         System.out.println("4. I want to place an order");
         System.out.println("5. I want to see my orders");
@@ -155,44 +144,13 @@ public class CustomerMenu {
 
     public void addItemToCart()
     {
-        //write methods in conn
 
         System.out.println("Enter product name (case sensitive)");
         String name = input.next();
         System.out.println("Enter how many you would like");
         int amount = input.nextInt();
 
-//        //check stock
-//        if(conn.validateProductStock(name, amount))
-//        {
-//            //check if order exists
-//            if(!cartIsCreated)
-//            {
-//                cartIsCreated = conn.createShipment(customer);
-//            }
-//
-//            if(cartIsCreated)
-//            {
-//                int id = conn.findProductID(name);
-//
-//                //add item to order
-//                conn.addItemToShipment(cartID, id, amount);
-//
-//                //remove amount from stock
-//                conn.removeStock(id, amount);
-//
-//                //print something
-//                System.out.println("Item added to your cart!");
-//            }
-//        }
-//        else
-//        {
-//            System.out.println("Not enough in stock!");
-//        }
-        //check stock
-
         if (conn.validateProductStock(name, amount)) {
-            // If no shipment exists, create one and store the shipment ID
             if (!cartIsCreated) {
                 int newCartID = conn.createShipment(customer);
                 if (newCartID == -1) {
@@ -206,10 +164,7 @@ public class CustomerMenu {
             if (cartIsCreated) {
                 int productID = conn.findProductID(name);
 
-                // Add item to shipment using correct shipment ID
                 conn.addItemToShipment(cartID, productID, amount);
-
-                // Remove stock
                 conn.removeStock(productID, amount);
 
                 System.out.println("Item added to your cart!");
