@@ -9,8 +9,15 @@ public class Main {
     static Customer currCustomer = new Customer("placeHolder", "placeHolder", -1);
     static CustomerMenu customerMenu = new CustomerMenu(currCustomer, conn);
 
-    // sad@sds.com
-    // asddsds
+    /**
+     * User credentials:
+     *  email: sad@sds.com
+     *  password: asddsds
+     *
+     *  Admin credentials:
+     *  email: admin@onlinestore.se
+     *  password: 1234
+     * **/
 
     //-----MAIN MENU-----//
     public static void PrintLoginMenu(){
@@ -37,7 +44,6 @@ public class Main {
             }
 
             option = input.nextInt();
-            //TODO MODIFY TO MAKE IT REUSABLE FOR ALL MENUS
             if (option >= 0 && option <= 9) {
                 isValidInput = true;
             } else {
@@ -60,7 +66,6 @@ public class Main {
             switch(option){
                 case 1:
                     boolean validCredentials = false;
-
                     while (!validCredentials) {
                         System.out.println("Enter your email address: ");
                         String email = input.next();
@@ -83,7 +88,6 @@ public class Main {
                     }
                     break;
                 case 2:
-                    //TODO Fix the spacing. It needs to be able to take spaces. Same problem i had with U1
                     System.out.println("Enter your first name: ");
                     String firstName =  input.next();
                     System.out.println("Enter your last name: ");
@@ -108,24 +112,24 @@ public class Main {
                     isOn = true;
                     break;
                 case 4:
-//                    boolean validAdminCredentials = false;
-//
-//                    while (!validAdminCredentials) {
-//                        System.out.println("Enter your admin email address: ");
-//                        String adminEmail = input.next();
-//
-//                        System.out.println("Enter your password: ");
-//                        String adminPassword = input.next();
-//
-//                        if (conn.validateAdmin(adminEmail, adminPassword)) {
-//                            System.out.println("Login successful. Accessing admin actions...");
-//                            validAdminCredentials = true;
-//                            adminActionsLoop();
-//                            isOn = false;
-//                        } else {
-//                            System.out.println("Invalid credentials. Please try again.");
-//                        }
-//                    }
+                    boolean validAdminCredentials = false;
+
+                    while (!validAdminCredentials) {
+                        System.out.println("Enter your admin email address: ");
+                        String adminEmail = input.next();
+
+                        System.out.println("Enter your password: ");
+                        String adminPassword = input.next();
+
+                        if (conn.validateAdmin(adminEmail, adminPassword)) {
+                            System.out.println("Login successful. Accessing admin actions...");
+                            validAdminCredentials = true;
+                            adminActionsLoop();
+                            isOn = false;
+                        } else {
+                            System.out.println("Invalid credentials. Please try again.");
+                        }
+                    }
                     adminActionsLoop();
                     break;
                 case 5:
@@ -152,6 +156,7 @@ public class Main {
         System.out.println("6. Create a new discount category");
         System.out.println("7. View orders waiting to be confirmed");
         System.out.println("8. Confirm an order");
+        System.out.println("9. Show best selling products per month");
         System.out.println("0. Exit admin menu");
     }
 
@@ -293,7 +298,11 @@ public class Main {
                     System.out.println();
                     System.out.println("Enter the id of the order you'd like to confirm: ");
                     int shipmentId = input.nextInt();
-                    conn.confirmShipment(shipmentId);
+                    conn.confirmOrder(shipmentId);
+                    isOnActive = true;
+                    break;
+                case 9:
+                    conn.getBestSellers();
                     isOnActive = true;
                     break;
                 case 0:
