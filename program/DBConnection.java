@@ -460,9 +460,6 @@ public class DBConnection {
     }
 
 
-
-    //TODO check that the sale is recorded. Implement a checkout method
-
     public void getBestSellers() {
         String query = "SELECT p.p_name AS product_name, " +
                 "SUM(s.quantity_sold) AS total_sold, " +
@@ -521,25 +518,6 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
-
-//    public void confirmOrder(int shipmentID) {
-//        String query = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
-//
-//        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-//            preparedStatement.setInt(1, shipmentID);
-//
-//            int rowsAffected = preparedStatement.executeUpdate();
-//
-//            if (rowsAffected > 0) {
-//                System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
-//            } else {
-//                System.out.println("No shipment found with ID " + shipmentID + ".");
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error updating shipment confirmation: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
 
     public void confirmOrder(int shipmentID) {
         String updateQuery = "UPDATE shipment SET s_confirmed = TRUE WHERE s_id = ?";
