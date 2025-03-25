@@ -9,16 +9,6 @@ public class Main {
     static Customer currCustomer = new Customer("placeHolder", "placeHolder", -1);
     static CustomerMenu customerMenu = new CustomerMenu(currCustomer, conn);
 
-    /**
-     * User credentials:
-     *  email: sad@sds.com
-     *  password: asddsds
-     *
-     *  Admin credentials:
-     *  email: admin@onlinestore.se
-     *  password: 1234
-     * **/
-
     //-----MAIN MENU-----//
     public static void PrintLoginMenu(){
         System.out.println("Welcome to the Online Store! " +

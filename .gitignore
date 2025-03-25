@@ -1,3 +1,13 @@
 /gitignore
 .idea
-.env
+.vscode
+
+/**
+     * User credentials:
+     *  email: sad@sds.com
+     *  password: asddsds
+     *
+     *  Admin credentials:
+     *  email: admin@onlinestore.se
+     *  password: 1234
+     * **/

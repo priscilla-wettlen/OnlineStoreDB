@@ -11,6 +11,7 @@ public class DBConnection {
     private static final String URL = "jdbc:postgresql://pgserver.mau.se/onlinestoreaj6817";
     private static final String USER = "aj6817";
     private static final String PASSWORD = System.getenv("CRED");
+
     private Connection conn;
 
     public DBConnection() {
@@ -18,7 +19,6 @@ public class DBConnection {
             Class.forName("org.postgresql.Driver");
 
             this.conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            //System.out.println("Connected to the database successfully.");
 
             // Test query
             String query = "SELECT c_first_name FROM customer";
