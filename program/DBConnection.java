@@ -526,11 +526,10 @@ public class DBConnection {
         try (PreparedStatement psUpdate = conn.prepareStatement(updateQuery);
              PreparedStatement psSelect = conn.prepareStatement(selectQuery)) {
 
-            // Retrieve products from shipment
             psSelect.setInt(1, shipmentID);
             ResultSet rs = psSelect.executeQuery();
 
-            List<int[]> items = new ArrayList<>(); // Store (product_id, quantity)
+            List<int[]> items = new ArrayList<>();
 
             while (rs.next()) {
                 int productID = rs.getInt("si_product");
@@ -545,9 +544,8 @@ public class DBConnection {
             if (rowsAffected > 0) {
                 System.out.println("Shipment with ID " + shipmentID + " has been confirmed.");
 
-                // Insert sales records with shipment_id
                 for (int[] item : items) {
-                    insertSale(shipmentID, item[0], item[1]); // Include shipment_id
+                    insertSale(shipmentID, item[0], item[1]);
                 }
                 System.out.println("Sales recorded for confirmed order.");
             } else {
@@ -558,6 +556,21 @@ public class DBConnection {
             System.out.println("Error confirming shipment and inserting sales: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public boolean isShipmentConfirmed(int shipmentID) {
+        String query = "SELECT s_confirmed FROM shipment WHERE s_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, shipmentID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean("s_confirmed");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking shipment confirmation: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
     }
 
 

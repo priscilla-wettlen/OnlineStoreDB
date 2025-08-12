@@ -138,19 +138,22 @@ public class CustomerMenu {
         System.out.println("4. I want to place an order");
         System.out.println("5. I want to see my orders");
         System.out.println("6. I want to cancel a order");
-        System.out.println("7. I want to to go back");
+        System.out.println("7. I want to log out");
         
     }
 
-    public void addItemToCart()
-    {
-
+    public void addItemToCart() {
         System.out.println("Enter product name (case sensitive)");
         String name = input.next();
         System.out.println("Enter how many you would like");
         int amount = input.nextInt();
 
         if (conn.validateProductStock(name, amount)) {
+            if (cartIsCreated && conn.isShipmentConfirmed(cartID)) {
+                cartIsCreated = false;
+                cartID = -1;
+            }
+
             if (!cartIsCreated) {
                 int newCartID = conn.createShipment(customer);
                 if (newCartID == -1) {
@@ -161,19 +164,17 @@ public class CustomerMenu {
                 cartIsCreated = true;
             }
 
-            if (cartIsCreated) {
-                int productID = conn.findProductID(name);
+            int productID = conn.findProductID(name);
+            conn.addItemToShipment(cartID, productID, amount);
+            conn.removeStock(productID, amount);
 
-                conn.addItemToShipment(cartID, productID, amount);
-                conn.removeStock(productID, amount);
+            System.out.println("Item added to your cart!");
 
-                System.out.println("Item added to your cart!");
-            }
         } else {
             System.out.println("Not enough in stock!");
         }
-
     }
+
 
     public int readMenuChoice() {
         int option = -1;
